@@ -71,9 +71,9 @@
 
       return `${day}-${month}-${year} ${hours}:${minutes}`;
     }
-    const getLogs = async () => {
+    const getDemands = async () => {
       try {
-        const response = await axios.get( '/getLogs');
+        const response = await axios.get( '/getDemands');
         return response.data.data || [];
       } catch (e) {
         console.error(e);
@@ -81,7 +81,7 @@
       }
     }
 
-    getLogs().then(
+    getDemands().then(
       response => {
         if (response.length > 0) {
           let i = 1;
@@ -90,35 +90,55 @@
               <thead>
                 <tr class="fw-bolder text-gray-800 fs-6">
                   <th>#</th>
-                  <th>Auteur</th>
-                  <th>Profil</th>
+                  <th>Code</th>
                   <th>Libellé</th>
-                  <th class="text-center">Action</th>
+                  <th class="text-center">Montant</th>
+                  <th class="text-center">Nombre de jours</th>
                   <th class="text-center">Date</th>
+                  <th class="text-center">Statut</th>
+                  <th class="text-center">Action</th>
                 </tr>
               </thead>
               <tbody class="text-gray-600 fw-semibold">
           `;
 				  response.map(data => {
             let dateHour = formatDateTime(data.created_at);
+            let dateRDV = formatDateTime(data.daterdv_at);
+            switch ($data.status) {
+              case 0:
+                status = 'Brouillon';
+                action = 'Transférer';
+                badge = 'badge-light-info';
+                break;
+              case 1:
+                status = 'Transféré';
+                action = 'Valider/Rejeter';
+                color = 'badge-light-warning';
+                break;
+              case 2:
+                status = 'Validé';
+                action = 'Imprimer';
+                color = 'badge-light-success';
+                break;
+              case 3:
+                status = 'Rejeté';
+                action = '';
+                color = 'badge-light-danger';
+                break;
+              default:
+                status = 'N/A';
+                action = '';
+                color = 'badge-light-secondary';
+            }
             outTable += `<tr>
               <td>${i}</td>
-              <td>
-                <div class="d-flex align-items-center">
-                  <div class="me-5 position-relative">
-                    <div class="symbol symbol-35px symbol-circle">
-                      <img src="/storage/${data.avatar}" alt="${data.username}" />
-                    </div>
-                  </div>
-                  <div class="d-flex flex-column justify-content-center">
-                    <a href="#" class="fs-6 text-gray-800 text-hover-primary">${data.username}</a>
-                  </div>
-                </div>
-              </td>
-              <td>${data.profil}</td>
+              <td>${data.code}</td>
               <td>${data.libelle}</td>
-              <td class="text-center"><span class="badge badge-light-${data.color} fw-bold px-4 py-3">${data.action}</span></td>
+              <td class="text-center">${data.amount}</td>
               <td class="text-center">${dateHour}</td>
+              <td class="text-center">${dateRDV}</td>
+              <td><span class="badge badge-light-${color} fw-bold px-4 py-3">${data.action}</span></td>
+              <td>${dateHour}</td>
             </tr>`;
             i++;
           });

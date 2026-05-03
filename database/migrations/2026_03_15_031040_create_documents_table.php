@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('icone', 50);
             $table->string('libelle', 50);
             $table->decimal('amount', 10, 0);
-            $table->integer('day');
+            $table->tinyInteger('day');
             $table->text('description')->nullable();
             $table->tinyInteger('position')->default('0');
             $table->tinyInteger('status')->default('1');

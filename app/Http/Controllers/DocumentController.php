@@ -86,13 +86,13 @@ class DocumentController extends Controller
 				}),
 			],
 			'amount' => 'required|integer|min:1',
-			'day' => 'required|integer|min:1',
+			'number' => 'required|integer|min:1',
 			'description' => 'required',
 		], [
 			'libelle.required' => "Le document est obligatoire.",
 			'libelle.unique' => "Le document existe déjà dans la base de données.",
 			'amount.*' => "Le montant est obligatoire et doit être un entier.",
-			'day.*' => "Le nombre de jours est obligatoire et doit être un entier.",
+			'number.*' => "Le nombre de jours est obligatoire et doit être un entier.",
 			'description.required' => "La description est obligatoire.",
 		]);
 		// Error field
@@ -104,7 +104,7 @@ class DocumentController extends Controller
 			]);
 		}
 		$set = [
-			'day' => $request->day,
+			'number' => $request->number,
 			'amount' => $request->amount,
 			'icone' => "far fa-address-card",
 			'description' => $request->description,
@@ -170,13 +170,13 @@ class DocumentController extends Controller
 				}),
 			],
 			'amount' => 'required|integer|min:1',
-			'day' => 'required|integer|min:1',
+			'number' => 'required|integer|min:1',
 			'description' => 'required',
 		], [
 			'libelle.required' => "Le document est obligatoire.",
 			'libelle.unique' => "Le document existe déjà dans la base de données.",
 			'amount.*' => "Le montant est obligatoire et doit être un entier.",
-			'day.*' => "Le nombre de jours est obligatoire et doit être un entier.",
+			'number.*' => "Le nombre de jours est obligatoire et doit être un entier.",
 			'description.required' => "La description est obligatoire.",
 		]);
 		// Error field
@@ -197,7 +197,7 @@ class DocumentController extends Controller
 			]);
 		}
 		$set = [
-			'day' => $request->day,
+			'number' => $request->number,
 			'amount' => $request->amount,
 			'description' => $request->description,
 			'libelle' => Str::upper(Myhelper::valideString($request->libelle)),

@@ -25,7 +25,7 @@ class MenuSeeder extends Seeder
             ['libelle' => "Demandes"],
             [
                 'icone' => "ki-calendar-8",
-                'target' => "requests",
+                'target' => "demands",
                 'position' => 2,
             ]
         );

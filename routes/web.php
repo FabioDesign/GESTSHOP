@@ -3,13 +3,13 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\{
+  DemandController,
   DashboardController,
   DocumentController,
   FileController,
   MenuController,
   PasswordController,
   ProfileController,
-  RequestController,
   StatusController,
   TownController,
   LogsController,
@@ -44,13 +44,13 @@ Route::controller(PasswordController::class)->group(function () {
 // Routes protégées par authentification
 Route::middleware(['auth'])->group(function () {
   Route::resources([
-    'menus' => MenuController::class,
+    'demands' => DemandController::class,
+    'documents' => DocumentController::class,
     'files' => FileController::class,
+    'menus' => MenuController::class,
+    'profiles' => ProfileController::class,
     'towns' => TownController::class,
     'users' => UserController::class,
-    'profiles' => ProfileController::class,
-    'documents' => DocumentController::class,
-    'requests' => RequestController::class,
   ]);
   // Route pour Tableau de bord
   Route::get('/dashboard', [DashboardController::class, 'index']);

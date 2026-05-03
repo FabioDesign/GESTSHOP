@@ -7,29 +7,55 @@ use Myhelper;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Models\{Consulardoc, Document, User};
+use App\Models\{Demand, Document, User};
 use Illuminate\Support\Facades\{Auth, DB, Log, Validator};
 
-class ConsulardocController extends Controller
+class DemandController extends Controller
 {
-    //Liste des documents consulaires
+    // Liste des demandes consulaires
 	public function index()
 	{
         if (!Auth::check()) {
             return redirect('/');
         }
-		//Title
-		$title = 'Gestion des documents consulaires';
-		//Menu
-		$currentMenu = 'consulardoc';
-		//Modal
-		$actionIds = Myhelper::actions(Auth::user()->profile_id, 3);
-		$addmodal = in_array(2, $actionIds) ? '<a href="/consulardoc/create" class="btn btn-sm fw-bold btn-primary">Ajouter un document</a>':'';
-		//Requete Read
-		$query = Consulardoc::orderByDesc('created_at')->get();
-		return view('pages.consulardoc.index', compact('title', 'currentMenu', 'addmodal', 'actionIds', 'query'));
+		// Title
+		$title = 'Gestion des demandes consulaires';
+		// Menu
+		$currentMenu = 'demands';
+		// Modal
+		$actionIds = Myhelper::actions(Auth::user()->profile_id, 2);
+		$addmodal = in_array(2, $actionIds) ? '<a href="/demands/create" class="btn btn-sm fw-bold btn-primary">Ajouter une demande</a>':'';
+		// Requete Read
+		$query = Demand::orderByDesc('created_at')->get();
+		return view('pages.demands.index', compact('title', 'currentMenu', 'addmodal', 'actionIds', 'query'));
 	}
-	// Afficher le détail d'un document
+    // Liste des demandes consulaires
+	public function getDemands() {
+		//Requete Read
+		$query = Demand::orderBy('status')
+		->orderByDesc('created_at')
+		->get();
+		// Transformer les données
+		$demands = $query->map(fn($data) => [
+			'uid' => $data->uid,
+			'code' => $data->code,
+			'libelle' => $data->document->libelle,
+			'number' => $data->number,
+			'email' => $data->email,
+			'company' => $data->company,
+			'status' => match((int)$data->status) {
+				0 => __('message.inactive'),
+				1 => __('message.active'),
+				2 => __('message.blocked'),
+			},
+			'created_at' => $data->created_at->format('d/m/Y H:i'),
+		]);
+		return response()->json([
+			'status' => true,
+			'data' => $demands,
+		]);
+	}
+	// Afficher le détail d'une demande
 	public function show($uid)
 	{
         if (!Auth::check()) {
@@ -38,31 +64,31 @@ class ConsulardocController extends Controller
 		// Title
 		$title = 'Détail du document consulaire';
 		// Menu
-		$currentMenu = 'consulardoc';
+		$currentMenu = 'demands';
 		// Vérifier si le document existe
-		$query = Consulardoc::where('uid', $uid)->first();
+		$query = Demand::where('uid', $uid)->first();
 		if (!$query) {
-			Log::warning("Consulardoc::show - Aucun document trouvé pour l'UID : {$uid}");
-			return redirect('/consulardoc');
+			Log::warning("Demand::show - Aucune demande trouvée pour l'UID : {$uid}");
+			return redirect('/demands');
 		}
 		// Modal
-		$addmodal = '<a href="/consulardoc" class="btn btn-sm fw-bold btn-danger">Retour</a>';
-		return view('pages.consulardoc.show', compact('title', 'currentMenu', 'addmodal', 'query'));
+		$addmodal = '<a href="/demands" class="btn btn-sm fw-bold btn-danger">Retour</a>';
+		return view('pages.demands.show', compact('title', 'currentMenu', 'addmodal', 'query'));
 	}
-    //Liste des documents
+    //Liste des demandes
 	public function create()
 	{
         if (!Auth::check()) {
             return redirect('/');
         }
 		//Title
-		$title = "Ajout d'un document";
+		$title = "Ajout d'une demande";
 		//Menu
-		$currentMenu = 'consulardoc';
+		$currentMenu = 'demands';
 		//Modal
-		$addmodal = '<a href="/consulardoc" class="btn btn-sm fw-bold btn-danger">Retour</a>
+		$addmodal = '<a href="/demands" class="btn btn-sm fw-bold btn-danger">Retour</a>
 		<a href="#" class="btn btn-sm fw-bold btn-success submitForm">Ajouter</a>';
-		return view('pages.consulardoc.create', compact('title', 'currentMenu', 'addmodal'));
+		return view('pages.demands.create', compact('title', 'currentMenu', 'addmodal'));
 	}
 	//Add document
 	public function store(request $request)
@@ -74,7 +100,7 @@ class ConsulardocController extends Controller
 		$validator = Validator::make($request->all(), [
 			'libelle' => [
 				'required',
-				Rule::unique('consulardoc')->where(function ($query) {
+				Rule::unique('demands')->where(function ($query) {
 					return $query->whereNull('deleted_at');
 				}),
 			],
@@ -90,7 +116,7 @@ class ConsulardocController extends Controller
 		]);
 		// Error field
 		if ($validator->fails()) {
-			Log::warning("Consulardoc::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
+			Log::warning("Demand::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 			return response()->json([
 				'status' => 0,
 				'message' => $validator->errors()->first(),
@@ -105,7 +131,7 @@ class ConsulardocController extends Controller
 		];
 		DB::beginTransaction();
 		try {
-			Consulardoc::create($set);
+			Demand::create($set);
 			DB::commit();
 			Myhelper::logs(
 				Session::get('username'),
@@ -120,14 +146,14 @@ class ConsulardocController extends Controller
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();
-			Log::warning("Consulardoc::store - Erreur : {$e->getMessage()} " . json_encode($request->all()));
+			Log::warning("Demand::store - Erreur : {$e->getMessage()} " . json_encode($request->all()));
 			return response()->json([
 				'status' => 0,
 				'message' => "Erreur lors de l'enregistrement.",
 			]);
 		}
 	}
-	// Afficher le formulaire d'édition d'un document
+	// Afficher le formulaire d'édition d'une demande
 	public function edit($uid)
 	{
         if (!Auth::check()) {
@@ -136,19 +162,19 @@ class ConsulardocController extends Controller
 		// Title
 		$title = 'Modification du document consulaire';
 		// Menu
-		$currentMenu = 'consulardoc';
+		$currentMenu = 'demands';
 		// Vérifier si le document existe
-		$query = Consulardoc::where('uid', $uid)->first();
+		$query = Demand::where('uid', $uid)->first();
 		if (!$query) {
-			Log::warning("Consulardoc::edit - Aucune document trouvé pour l'UID : {$uid}");
-			return redirect('/consulardoc');
+			Log::warning("Demand::edit - Aucune document trouvé pour l'UID : {$uid}");
+			return redirect('/demands');
 		}
 		// Modal
-		$addmodal = '<a href="/consulardoc" class="btn btn-sm fw-bold btn-danger">Retour</a>
+		$addmodal = '<a href="/demands" class="btn btn-sm fw-bold btn-danger">Retour</a>
 		<a href="#" class="btn btn-sm fw-bold btn-success submitForm">Modifier</a>';
-		return view('pages.consulardoc.edit', compact('title', 'currentMenu', 'addmodal', 'query'));
+		return view('pages.demands.edit', compact('title', 'currentMenu', 'addmodal', 'query'));
 	}
-	// Mettre à jour un document
+	// Mettre à jour une demande
 	public function update(Request $request, $uid)
 	{
         if (!Auth::check()) {
@@ -158,7 +184,7 @@ class ConsulardocController extends Controller
 		$validator = Validator::make($request->all(), [
 			'libelle' => [
 				'required',
-				Rule::unique('consulardoc')->where(function ($query) use ($uid) {
+				Rule::unique('demands')->where(function ($query) use ($uid) {
 					return $query->where('uid', '!=', $uid)->whereNull('deleted_at');
 				}),
 			],
@@ -174,16 +200,16 @@ class ConsulardocController extends Controller
 		]);
 		// Error field
 		if ($validator->fails()) {
-			Log::warning("Consulardoc::update - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
+			Log::warning("Demand::update - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 			return response()->json([
 				'status' => 0,
 				'message' => $validator->errors()->first(),
 			]);
 		}
 		// Vérifier si le document existe
-		$query = Consulardoc::where('uid', $uid)->first();
+		$query = Demand::where('uid', $uid)->first();
 		if (!$query) {
-			Log::warning("Consulardoc::update - Aucune document trouvé pour l'UID : {$uid}");
+			Log::warning("Demand::update - Aucune document trouvé pour l'UID : {$uid}");
 			return response()->json([
 				'status' => 0,
 				'message' => "Document consulaire non trouvé.",
@@ -213,14 +239,14 @@ class ConsulardocController extends Controller
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack(); // Annuler la transaction en cas d'erreur
-			Log::warning("Consulardoc::update - Erreur : {$e->getMessage()} " . json_encode($request->all()));
+			Log::warning("Demand::update - Erreur : {$e->getMessage()} " . json_encode($request->all()));
 			return response()->json([
 				'status' => 0,
 				'message' => "Erreur lors de la modification.",
 			]);
 		}
 	}
-	// Supprimer un document
+	// Supprimer une demande
 	public function destroy($uid)
 	{
         if (!Auth::check()) {
@@ -228,9 +254,9 @@ class ConsulardocController extends Controller
         }
 		try {
 			// Vérifier si le document existe
-			$document = Consulardoc::where('uid', $uid)->first();
+			$document = Demand::where('uid', $uid)->first();
 			if (!$document) {
-				Log::warning("Consulardoc::destroy - Aucune document trouvé pour l'UID : {$uid}");
+				Log::warning("Demand::destroy - Aucune document trouvé pour l'UID : {$uid}");
 				return response()->json([
 					'status' => 0,
 					'message' => "Document consulaire non trouvé.",
@@ -239,7 +265,7 @@ class ConsulardocController extends Controller
 			// Vérifier si des utilisateurs sont associés
 			$documentCount = User::where('document_id', $document->id)->count();
 			if ($documentCount > 0) {
-				Log::warning("Consulardoc::destroy - Cet document est associé à {$documentCount} utilisateur(s).");
+				Log::warning("Demand::destroy - Cet document est associé à {$documentCount} utilisateur(s).");
 				return response()->json([
 					'status' => 0,
 					'message' => "Cet document est associé à {$documentCount} utilisateur(s).",
@@ -262,7 +288,7 @@ class ConsulardocController extends Controller
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();
-			Log::warning("Consulardoc::destroy - Erreur : {$e->getMessage()} " . json_encode($request->all()));
+			Log::warning("Demand::destroy - Erreur : {$e->getMessage()} " . json_encode($request->all()));
 			return response()->json([
 				'status' => 0,
 				'message' => "Erreur lors de la suppression.",
