@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class File extends Model
+class Cash extends Model
 {
     use HasFactory, SoftDeletes;
 

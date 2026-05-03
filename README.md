@@ -1,5 +1,5 @@
 # Titre du projet
-APP WEB GUINEE-COTE D'IVOIRE
+GESTION DE STOCK
 
 ## A Propos
 C'est une App de demande consulaire des ressortisants guinéens en Côte d'Ivoire.

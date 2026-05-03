@@ -11,16 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('nationality', function (Blueprint $table) {
-            $table->smallIncrements('id');
+        Schema::create('categories', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('libelle');
-            $table->char('alpha', 2);
-            $table->string('code', 10);
+            $table->tinyInteger('status');
+            $table->tinyInteger('type_id');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('nationality');
+        Schema::dropIfExists('categories');
     }
 };

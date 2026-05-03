@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('menus', function (Blueprint $table) {
             $table->smallIncrements('id');
             $table->string('libelle', 50);
-            $table->string('target')->nullable();
-            $table->string('icone')->nullable();
+            $table->string('target', 50)->nullable();
+            $table->string('icone', 50)->nullable();
             $table->tinyInteger('position');
             $table->tinyInteger('status')->default(1);
         });

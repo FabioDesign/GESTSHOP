@@ -45,15 +45,6 @@
 						<div class="footer-left">
 							<h3 class="text-white fw-normal m-0">Portail officiel des démarches consulaires des Ambassades de la Guinée.</h3>
 						</div>
-						<div class="footer-button">
-							@foreach($query as $data)
-							<a href="{{ asset('storage/' . $data->specimen) }}" target="_blank">
-								<button class="btn">
-									<i class="{{ $data->icone }}"></i><span>{{ $data->libelle }}</span>
-								</button>
-							</a>
-							@endforeach
-						</div>
 						<!--end::Title-->
 					</div>
 					<!--begin::Aside-->

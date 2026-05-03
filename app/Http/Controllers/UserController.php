@@ -7,8 +7,8 @@ use \Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Models\{Logs, Permission, Profile, User};
 use Illuminate\Support\Facades\{DB, Hash, Log, Validator, Auth};
-use App\Models\{Country, Document, Logs, Nationality, Consulardoc, Permission, Profile, Town, User};
 
 class UserController extends Controller
 {    
@@ -520,11 +520,7 @@ class UserController extends Controller
     // Connexion
 	public function login()
     {
-        //Requete Read
-        $query = Document::where('status', 1)
-        ->orderBy('position')
-        ->get();
-        return view('login', compact('query'));
+        return view('login');
 	}
     // Authentification avec Laravel Auth
     public function auth(Request $request)

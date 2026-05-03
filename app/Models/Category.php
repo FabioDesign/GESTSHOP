@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Country extends Model
+class Category extends Model
 {
-    public $table = 'country';
+    public $table = 'categories';
+
+    protected $guarded = [];
     
     public $timestamps = false;
+
 }

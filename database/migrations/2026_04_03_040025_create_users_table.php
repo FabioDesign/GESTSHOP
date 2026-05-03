@@ -12,10 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->uuid('uid');
-            $table->string('code', 5);
-            $table->string('civility', 5);
             $table->string('lastname');
             $table->string('firstname');
             $table->string('gender', 1);
@@ -23,23 +21,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('password')->nullable();
             $table->timestamp('password_at')->nullable();
-            $table->date('birthday_at');
-            $table->string('birthplace');
-            $table->string('size')->nullable();
-            $table->string('hairs')->nullable();
-            $table->string('complexion')->nullable();
-            $table->string('profession')->nullable();
-            $table->string('home_address')->nullable();
-            $table->string('particular_sign')->nullable();
-            $table->string('father_fullname')->nullable();
-            $table->string('mother_fullname')->nullable();
-            $table->string('person_fullname')->nullable();
-            $table->string('person_number')->nullable();
-            $table->string('person_address')->nullable();
-            $table->date('arrival_at')->nullable();
             $table->text('avatar')->nullable();
-            $table->text('stamp')->nullable();
-            $table->text('signature')->nullable();
             $table->timestamp('login_at')->nullable();
             $table->tinyInteger('status')->default('0');
             $table->timestamps();
@@ -51,10 +33,7 @@ return new class extends Migration
             $table->foreignId('deleted_by')->nullable();
             $table->foreignId('blocked_by')->nullable();
             $table->foreignId('activated_by')->nullable();
-            $table->integer('town_id');
-            $table->integer('profile_id')->default('0');
-            $table->integer('embassy_id')->default('0');
-            $table->integer('nationality_id');
+            $table->integer('profile_id');
         });
     }
 

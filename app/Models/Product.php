@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class Document extends Model
+class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -22,10 +22,5 @@ class Document extends Model
                 $model->uid = Str::uuid()->toString();
             }
         });
-    }
-
-    public function files()
-    {
-        return $this->hasMany(File::class, 'document_id');
     }
 }

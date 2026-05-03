@@ -11,16 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attachments', function (Blueprint $table) {
-            $table->id();
-            $table->string('filename');
+        Schema::create('products', function (Blueprint $table) {
+            $table->increments('id');
+            $table->uuid('uid');
+            $table->string('libelle');
+            $table->decimal('price', 10, 0);
+            $table->decimal('stock', 5, 0);
+            $table->decimal('seuil', 5, 0);
+            $table->tinyInteger('status');
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->nullable();
             $table->foreignId('updated_by')->nullable();
             $table->foreignId('deleted_by')->nullable();
-            $table->integer('file_id');
-            $table->integer('demand_id');
+            $table->tinyInteger('type_id');
         });
     }
 
@@ -29,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attachments');
+        Schema::dropIfExists('products');
     }
 };

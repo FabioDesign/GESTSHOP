@@ -11,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('towns', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('uid');
-            $table->string('libelle');
-            $table->tinyInteger('status')->default('1');
+        Schema::create('transactions', function (Blueprint $table) {
+            $table->id();
+            $table->decimal('price', 10, 0);
+            $table->decimal('quantity', 5, 0);
             $table->timestamps();
-            $table->softDeletes();
             $table->foreignId('created_by')->nullable();
             $table->foreignId('updated_by')->nullable();
-            $table->foreignId('deleted_by')->nullable();
-            $table->integer('country_id');
+            $table->integer('cash_id');
+            $table->integer('product_id');
+            $table->integer('subcategory_id');
         });
     }
 
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('towns');
+        Schema::dropIfExists('transactions');
     }
 };

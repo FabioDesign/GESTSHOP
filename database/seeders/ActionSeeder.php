@@ -35,10 +35,7 @@ class ActionSeeder extends Seeder
             ['libelle' => "Valider"]
         );
         Action::firstOrCreate(
-            ['libelle' => "Rejeter"]
-        );
-        Action::firstOrCreate(
-            ['libelle' => "Imprimer"]
+            ['libelle' => "Annuler"]
         );
     }
 }
