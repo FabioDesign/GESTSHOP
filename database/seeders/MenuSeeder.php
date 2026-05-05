@@ -22,35 +22,27 @@ class MenuSeeder extends Seeder
             ]
         );
         Menu::firstOrCreate(
-            ['libelle' => "Demandes"],
+            ['libelle' => "Caisses"],
             [
                 'icone' => "ki-calendar-8",
-                'target' => "demands",
+                'target' => "cashs",
                 'position' => 2,
             ]
         );
         Menu::firstOrCreate(
-            ['libelle' => "Documents"],
+            ['libelle' => "Gestion de stock"],
             [
                 'icone' => "ki-abstract-26",
-                'target' => "documents",
+                'target' => "products",
                 'position' => 3,
             ]
         );
         Menu::firstOrCreate(
-            ['libelle' => "Pièces à fournir"],
+            ['libelle' => "Autres charges"],
             [
                 'icone' => "ki-abstract-25",
-                'target' => "files",
+                'target' => "category",
                 'position' => 4,
-            ]
-        );
-        Menu::firstOrCreate(
-            ['libelle' => "Villes"],
-            [
-                'icone' => "ki-bank",
-                'target' => "towns",
-                'position' => 5,
             ]
         );
         Menu::firstOrCreate(
@@ -58,7 +50,7 @@ class MenuSeeder extends Seeder
             [
                 'icone' => "ki-map",
                 'target' => "profiles",
-                'position' => 6,
+                'position' => 5,
             ]
         );
         Menu::firstOrCreate(
@@ -66,7 +58,7 @@ class MenuSeeder extends Seeder
             [
                 'icone' => "ki-address-book",
                 'target' => "users",
-                'position' => 7,
+                'position' => 6,
             ]
         );
         Menu::firstOrCreate(
@@ -74,7 +66,7 @@ class MenuSeeder extends Seeder
             [
                 'icone' => "ki-code",
                 'target' => "logs",
-                'position' => 8,
+                'position' => 7,
             ]
         );
     }

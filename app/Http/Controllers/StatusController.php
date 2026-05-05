@@ -6,7 +6,7 @@ use Session;
 use Myhelper;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\{Auth, Log};
-use App\Models\{Document, File, Profile, Town, User};
+use App\Models\{Document, File, Profile, SubCategory, User};
 
 class StatusController extends Controller
 {
@@ -30,9 +30,9 @@ class StatusController extends Controller
                     'model' => Profile::class,
                     'label' => 'Profil'
                 ],
-                'towns' => [
-                    'model' => Town::class,
-                    'label' => 'Ville'
+                'category' => [
+                    'model' => SubCategory::class,
+                    'label' => 'Categorie'
                 ],
                 'users' => [
                     'model' => User::class,
@@ -71,11 +71,12 @@ class StatusController extends Controller
             $item->update([
                 'status' => $newStatus,
             ]);
+            $libelle = $item->libelle ?? ($item->lastname . ' ' . $item->firstname);
             // Log
             Myhelper::logs(
                 Session::get('username'),
                 Session::get('profil'),
-                "{$label}: " . $item->libelle . " " .$action,
+                "{$label}: {$libelle} $action",
 				'Modifier',
                 Session::get('avatar')
             );

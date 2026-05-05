@@ -78,7 +78,7 @@
 									<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item here show menu-here-bg menu-lg-down-accordion me-0 me-lg-2">
 										<!--begin:Menu link-->
 										<span class="menu-link">
-											<span class="menu-title" style="font-size: 18px;">Ambassade de la République de Guinée - {{ Session::get('embassy') }}</span>
+											<span class="menu-title" style="font-size: 18px;">Gestion Shop de Marius</span>
 										</span>
 										<!--end:Menu link-->
 									</div>
@@ -174,8 +174,7 @@
 										<img alt="Logo" src="/assets/img/amoirie.png" class="h-20px app-sidebar-logo-minimize" />
 									</div>
 									<div class="logo-text d-flex flex-column">
-										<span style="color:#FFF; font-weight:bold;">République de Guinée</span>
-										<span style="color:#FFF;font-size: 10px;">Ministère d'Etat Chargé des Affaires Étrangères et des Guinéens de l'Etrangers</span>
+										<span style="color:#FFF; font-weight:bold;">GestShop</span>
 									</div>
 								</a>
 								<!--end::Logo image-->
@@ -288,13 +287,13 @@
 								<!--begin::Copyright-->
 								<div class="text-dark order-2 order-md-1">
 									<span class="text-muted fw-semibold me-1">2026&copy;</span>
-									<a href="#" class="text-gray-800 text-hover-primary">Ambassade de la Guinée</a>
+									<a href="#" class="text-gray-800 text-hover-primary">GestShop</a>
 								</div>
 								<!--end::Copyright-->
 								<!--begin::Menu-->
 								<ul class="menu order-1">
 									<li class="menu-item">
-										<a href="#" class="menu-link px-2"><img alt="Logo" src="/assets/map/{{ Session::get('map') }}.png" class="h-30px" /></a>
+										<a href="#" class="menu-link px-2"><img alt="Logo" src="/assets/img/ci.png" class="h-30px" /></a>
 									</li>
 								</ul>
 								<!--end::Menu-->

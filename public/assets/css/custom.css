@@ -167,7 +167,7 @@
   left: 0;
   right: 0;
   height: 70px;
-  background: linear-gradient(to right, #DC2626, #EAB308, #16A34A);
+  background: linear-gradient(to right, #e49401, #d8d6d6, #029b3a);
   z-index: 0;
 }
 .app-container {
@@ -181,7 +181,7 @@
   object-fit: cover;
 }
 .app-sidebar-logo{
-  background:#DC2626 !important;
+  background:#e49401 !important;
 }
 #previewImage {
   max-width: 100%; /* largeur maximale pour éviter les débordements */
@@ -200,7 +200,7 @@
   width: 100%;
 }
 .img-responsive {
-  max-width: 100%;
+  width: 100% !important;
   height: auto;
 }
 .img-logs {

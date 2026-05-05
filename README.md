@@ -18,7 +18,7 @@ git init
 git add README.md
 git commit -m "first commit"
 git branch -M main
-git remote add origin https://github.com/FabioDesign/GUINEE-CI.git
+git remote add origin https://github.com/FabioDesign/GESTSHOP.git
 git push -u origin main
 ```
 
@@ -38,23 +38,28 @@ composer require barryvdh/laravel-dompdf
 php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
 ```
 
-5. Copier le contenu de .env.example vers .env et modifier les paramètres
+5. Créer le dossier de stockage des images
+```
+php artisan storage:link
+```
+
+6. Copier le contenu de .env.example vers .env et modifier les paramètres
 ```
 cp .env.example .env
 ```
 
-6. Faire la migration de la base de données
+7. Faire la migration de la base de données
 ```
 php artisan migrate
 php artisan db:seed
 ```
 
-7. Exécuter la commande à la fin
+8. Exécuter la commande à la fin
 ```
 php artisan key:generate
 ```
 
-8. Vérifier si tout est bien installé
+9. Vérifier si tout est bien installé
 ```
 composer dump-autoload
 ```

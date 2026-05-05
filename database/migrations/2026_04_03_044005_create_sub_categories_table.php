@@ -15,7 +15,7 @@ return new class extends Migration
             $table->increments('id');
             $table->uuid('uid');
             $table->string('libelle');
-            $table->tinyInteger('status');
+            $table->tinyInteger('status')->default('1');
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->nullable();

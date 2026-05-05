@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
             $this->call([
                 // Action
                 ActionSeeder::class,
+                // Categorie
+                CategorySeeder::class,
                 // Menu-Action
                 MenuActionSeeder::class,
                 // Menu

@@ -7,7 +7,7 @@ use \Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Models\{Logs, Permission, Profile, User};
+use App\Models\{Cash, Logs, Permission, Profile, User};
 use Illuminate\Support\Facades\{DB, Hash, Log, Validator, Auth};
 
 class UserController extends Controller
@@ -23,10 +23,10 @@ class UserController extends Controller
 		//Menu
 		$currentMenu = 'users';
 		//Modal
-		$actionIds = Myhelper::actions(Auth::user()->profile_id, 7);
+		$actionIds = Myhelper::actions(Auth::user()->profile_id, 6);
 		$addmodal = in_array(2, $actionIds) ? '<a href="/users/create" class="btn btn-sm fw-bold btn-primary">Ajouter un utilisateur</a>':'';
 		//Requete Read
-		$query = User::orderByDesc('created_at')->get();
+		$query = User::where('id', '!=', 1)->orderByDesc('created_at')->get();
 		Myhelper::logs(
 			Session::get('username'),
 			Session::get('profil'),
@@ -54,10 +54,7 @@ class UserController extends Controller
 		}
 		// Modal
 		$addmodal = '<a href="/users" class="btn btn-sm fw-bold btn-danger">Retour</a>';
-		$pays = Country::orderBy('libelle')->get();
-		$code = Country::where('code', $query->code)->first();
-		$ville = Town::where('id', $query->town_id)->first();
-		return view('pages.users.show', compact('title', 'currentMenu', 'addmodal', 'query', 'code', 'ville', 'pays'));
+		return view('pages.users.show', compact('title', 'currentMenu', 'addmodal', 'query'));
 	}
     //Liste des utilisateurs
 	public function create()
@@ -72,24 +69,21 @@ class UserController extends Controller
 		//Modal
 		$addmodal = '<a href="/users" class="btn btn-sm fw-bold btn-danger">Retour</a>
 		<a href="#" class="btn btn-sm fw-bold btn-success submitForm">Ajouter</a>';
-        $civility = ['M.', 'Mme', 'Mlle'];
-		$pays = Country::orderBy('libelle')->get();
-		$nationality = Nationality::orderBy('libelle')->get();
-		$town = Town::where('country_id', 61)->orderBy('libelle')->get();
-		$country = Country::where('embassy', 1)->orderBy('libelle')->get();
+        $gender = ['M' => 'Masculin', 'F' => 'Féminin'];
 		$profile = Profile::where('id', '!=', 1)->orderBy('libelle')->get();
-		return view('pages.users.create', compact('title', 'currentMenu', 'addmodal', 'civility', 'town', 'pays', 'profile', 'country', 'nationality'));
+		return view('pages.users.create', compact('title', 'currentMenu', 'addmodal', 'gender', 'profile'));
 	}
     // Account creation
     public function store(Request $request)
     {
 		// Validator
 		$validator = Validator::make($request->all(), [
-			'civility' => 'required|in:M.,Mme,Mlle',
+			'gender' => 'required|in:M,F',
 			'lastname' => 'required',
 			'firstname' => 'required',
 			'number' => [
 				'required',
+				'digits:10',
 				Rule::unique('users')->where(function ($query) {
 					return $query->whereNull('deleted_at');
 				}),
@@ -100,54 +94,18 @@ class UserController extends Controller
 					return $query->whereNull('deleted_at');
 				}),
 			],
-			'profession' => 'required',
-			'nationality_id' => 'required',
-            'town_id' => 'required',
-            'birthday_at' => 'required|date|date_format:Y-m-d',
-            'birthplace' => 'required',
-            'father_fullname' => 'required',
-            'mother_fullname' => 'required',
-            'size' => 'required',
-            'complexion' => 'required',
-            'hairs' => 'required',
-            'particular_sign' => 'required',
-            'home_address' => 'required',
-            'person_fullname' => 'required',
-            'person_number' => 'required',
-            'person_address' => 'required',
-            'arrival_at' => 'required|date|date_format:Y-m-d',
-			'signature' => 'nullable|file|mimes:png,jpg,jpeg|max:2048',
-			'stamp' => 'nullable|file|mimes:png,jpg,jpeg|max:2048',
+			'profile_id' => 'required',
 		], [
-			'civility.required' => "La civilité est obligatoire.",
-			'civility.in' => "La civilité est incorrecte.",
+			'gender.required' => "Le genre est obligatoire.",
+			'gender.in' => "Le genre est incorrecte.",
 			'lastname.required' => "Le nom est obligatoire.",
 			'firstname.required' => "Les prénoms sont obligatoires.",
 			'number.required' => "Le numéro de téléphone est obligatoire.",
+			'number.digits' => "Le numéro de téléphone doit être 10 caractères.",
 			'number.unique' => "Le numéro de téléphone existe déjà dans la base de données.",
 			'email.required' => "L'email est obligatoire.",
 			'email.unique' => "L'email existe déjà dans la base de données.",
-			'profession.required' => "La profession est obligatoire.",
-			'nationality_id.required' => "La nationalité est obligatoire.",
-			'birthday_at.required' => "La date de naissance est obligatoire.",
-			'birthday_at.date_format' => "Le format de la date de naissance est incorrecte.",
-			'town_id.required' => "La prefecture est obligatoire.",
-			'birthplace.required' => "Le lieu de naissance est obligatoire.",
-			'father_fullname.required' => "Le nom et prénoms du père est obligatoire.",
-			'mother_fullname.required' => "Le nom et prénoms de la mère est obligatoire.",
-			'size.required' => "La taille est obligatoire.",
-			'complexion.required' => "Le teint est obligatoire.",
-			'hairs.required' => "Les cheveux sont obligatoires.",
-			'particular_sign.required' => "Les Signes particuliers sont obligatoires.",
-			'home_address.required' => "L'adresse domiciliale est obligatoire.",
-			'arrival_at.required' => "La date d'arrivée est obligatoire.",
-			'arrival_at.date_format' => "Le format de la date d'arrivée est incorrecte.",
-			'signature.file' => "La signature doit être un fichier.",
-			'signature.mimes' => "La signature doit être un fichier de type : png, jpg ou jpeg",
-			'signature.max' => "La signature ne doit pas être supérieur à 2Mo.",
-			'stamp.file' => "Le cachet doit être un fichier.",
-			'stamp.mimes' => "Le cachet doit être un fichier de type : png, jpg ou jpeg",
-			'stamp.max' => "Le cachet ne doit pas être supérieur à 2Mo.",
+			'profile_id.required' => "Le profil est obligatoire.",
 		]);
 		// Error field
 		if ($validator->fails()) {
@@ -157,45 +115,16 @@ class UserController extends Controller
 				'message' => $validator->errors()->first(),
 			]);
 		}
-        // Gendre
-        $gender = match($request->civility) {
-            'Mme', 'Mlle' => 'F',
-            default => 'M',
-        };
         // Formatage du nom et prénoms
         $lastname = mb_strtoupper($request->lastname, 'UTF-8');
         $firstname = mb_convert_case(Str::lower($request->firstname), MB_CASE_TITLE, "UTF-8");
-		// Enregistrer le fichier
-		$signature = $request->file('signature') != '' ? $request->file('signature')->store('signatures', 'public') : '';
-		$stamp = $request->file('stamp') != '' ? $request->file('stamp')->store('stamps', 'public') : '';
         $set = [
-            'code' => substr($request->code, 1),
-            'civility' => $request->civility,
+            'gender' => $request->gender,
             'lastname' => $lastname,
             'firstname' => $firstname,
-            'gender' => $gender,
             'number' => $request->number,
             'email' => Str::lower($request->email),
-            'profession' => $request->profession,
             'profile_id' => $request->profile_id,
-            'embassy_id' => $request->embassy_id,
-            'nationality_id' => $request->nationality_id,
-            'birthday_at' => $request->birthday_at,
-            'town_id' => $request->town_id,
-            'birthplace' => $request->birthplace,
-            'father_fullname' => $request->father_fullname,
-            'mother_fullname' => $request->mother_fullname,
-            'size' => $request->size,
-            'complexion' => $request->complexion,
-            'hairs' => $request->hairs,
-            'particular_sign' => $request->particular_sign,
-            'home_address' => $request->home_address,
-            'person_fullname' => $request->person_fullname,
-            'person_number' => $request->person_number,
-            'person_address' => $request->person_address,
-            'arrival_at' => $request->arrival_at,
-            'signature' => $signature,
-            'stamp' => $stamp,
             'password_at' => now(),
             'password' => Hash::make('Azerty@123'),
         ];
@@ -243,20 +172,13 @@ class UserController extends Controller
 		// Modal
 		$addmodal = '<a href="/users" class="btn btn-sm fw-bold btn-danger">Retour</a>
 		<a href="#" class="btn btn-sm fw-bold btn-success submitForm">Modifier</a>';
-        $civility = ['M.', 'Mme', 'Mlle'];
-		$pays = Country::orderBy('libelle')->get();
-		$code = Country::where('code', $query->code)->first();
-		$nationality = Nationality::orderBy('libelle')->get();
-		$ville = Town::where('id', $query->town_id)->first();
-		$town = Town::where('country_id', $ville->country_id)->orderBy('libelle')->get();
-		$country = Country::where('embassy', 1)->orderBy('libelle')->get();
+        $gender = ['M' => 'Masculin', 'F' => 'Féminin'];
 		$profile = Profile::where('id', '!=', 1)->orderBy('libelle')->get();
-		return view('pages.users.edit', compact('title', 'currentMenu', 'addmodal', 'query', 'code', 'ville', 'civility', 'town', 'pays', 'profile', 'country', 'nationality'));
+		return view('pages.users.edit', compact('title', 'currentMenu', 'addmodal', 'query', 'gender', 'profile'));
 	}
     // Modification
     public function update(Request $request, $uid)
     {
-        // dd($request);
         if (!Auth::check()) {
             return 'x';
         }
@@ -272,7 +194,7 @@ class UserController extends Controller
             }
             // Validator
             $validator = Validator::make($request->all(), [
-                'civility' => 'required|in:M.,Mme,Mlle',
+                'gender' => 'required|in:M,F',
                 'lastname' => 'required',
                 'firstname' => 'required',
                 'number' => [
@@ -287,54 +209,17 @@ class UserController extends Controller
                         return $query->where('uid', '!=', $uid)->whereNull('deleted_at');
                     }),
                 ],
-                'profession' => 'required',
-                'nationality_id' => 'required',
-                'town_id' => 'required',
-                'birthday_at' => 'required|date|date_format:Y-m-d',
-                'birthplace' => 'required',
-                'father_fullname' => 'required',
-                'mother_fullname' => 'required',
-                'size' => 'required',
-                'complexion' => 'required',
-                'hairs' => 'required',
-                'particular_sign' => 'required',
-                'home_address' => 'required',
-                'person_fullname' => 'required',
-                'person_number' => 'required',
-                'person_address' => 'required',
-                'arrival_at' => 'required|date|date_format:Y-m-d',
-                'signature' => 'nullable|file|mimes:png,jpg,jpeg|max:2048',
-                'stamp' => 'nullable|file|mimes:png,jpg,jpeg|max:2048',
+                'profile_id' => 'required',
             ], [
-                'civility.required' => "La civilité est obligatoire.",
-                'civility.in' => "La civilité est incorrecte.",
+                'gender.required' => "Le genre est obligatoire.",
+                'gender.in' => "Le genre est incorrecte.",
                 'lastname.required' => "Le nom est obligatoire.",
                 'firstname.required' => "Les prénoms sont obligatoires.",
                 'number.required' => "Le numéro de téléphone est obligatoire.",
                 'number.unique' => "Le numéro de téléphone existe déjà dans la base de données.",
                 'email.required' => "L'email est obligatoire.",
                 'email.unique' => "L'email existe déjà dans la base de données.",
-                'profession.required' => "La profession est obligatoire.",
-                'nationality_id.required' => "La nationalité est obligatoire.",
-                'birthday_at.required' => "La date de naissance est obligatoire.",
-                'birthday_at.date_format' => "Le format de la date de naissance est incorrecte.",
-                'town_id.required' => "La prefecture est obligatoire.",
-                'birthplace.required' => "Le lieu de naissance est obligatoire.",
-                'father_fullname.required' => "Le nom et prénoms du père est obligatoire.",
-                'mother_fullname.required' => "Le nom et prénoms de la mère est obligatoire.",
-                'size.required' => "La taille est obligatoire.",
-                'complexion.required' => "Le teint est obligatoire.",
-                'hairs.required' => "Les cheveux sont obligatoires.",
-                'particular_sign.required' => "Les Signes particuliers sont obligatoires.",
-                'home_address.required' => "L'adresse domiciliale est obligatoire.",
-                'arrival_at.required' => "La date d'arrivée est obligatoire.",
-                'arrival_at.date_format' => "Le format de la date d'arrivée est incorrecte.",
-                'signature.file' => "La signature doit être un fichier.",
-                'signature.mimes' => "La signature doit être un fichier de type : png, jpg ou jpeg",
-                'signature.max' => "La signature ne doit pas être supérieur à 2Mo.",
-                'stamp.file' => "Le cachet doit être un fichier.",
-                'stamp.mimes' => "Le cachet doit être un fichier de type : png, jpg ou jpeg",
-                'stamp.max' => "Le cachet ne doit pas être supérieur à 2Mo.",
+                'profile_id.required' => "Le profil est obligatoire.",
             ]);
             // Error field
             if ($validator->fails()) {
@@ -344,50 +229,19 @@ class UserController extends Controller
                     'message' => $validator->errors()->first(),
                 ]);
             }
-            // Gendre
-            $gender = match($request->civility) {
-                'Mme', 'Mlle' => 'F',
-                default => 'M',
-            };
             // Formatage du nom et prénoms
             $lastname = mb_strtoupper($request->lastname, 'UTF-8');
             $firstname = mb_convert_case(Str::lower($request->firstname), MB_CASE_TITLE, "UTF-8");
             $set = [
-                'code' => substr($request->code, 1),
-                'civility' => $request->civility,
+                'gender' => $request->gender,
                 'lastname' => $lastname,
                 'firstname' => $firstname,
-                'gender' => $gender,
                 'number' => $request->number,
                 'email' => Str::lower($request->email),
-                'profession' => $request->profession,
-                'birthday_at' => $request->birthday_at,
-                'town_id' => $request->town_id,
-                'birthplace' => $request->birthplace,
-                'father_fullname' => $request->father_fullname,
-                'mother_fullname' => $request->mother_fullname,
-                'size' => $request->size,
-                'complexion' => $request->complexion,
-                'hairs' => $request->hairs,
-                'particular_sign' => $request->particular_sign,
-                'home_address' => $request->home_address,
-                'person_fullname' => $request->person_fullname,
-                'person_number' => $request->person_number,
-                'person_address' => $request->person_address,
-                'arrival_at' => $request->arrival_at,
+                'profile_id' => $request->profile_id,
+                'password_at' => now(),
+                'password' => Hash::make('Azerty@123'),
             ];
-            if ($request->has('profile_id')) $set['profile_id'] = $request->profile_id;
-            if ($request->has('embassy_id')) $set['embassy_id'] = $request->embassy_id;
-            if ($request->has('nationality_id')) $set['nationality_id'] = $request->nationality_id;
-            // Enregistrer le fichier
-            if ($request->img_sig == 0) {
-                $signature = $request->file('signature') != '' ? $request->file('signature')->store('signatures', 'public') : '';
-                $set['signature'] = $signature;
-            }
-            if ($request->img_sta == 0) {
-                $stamp = $request->file('stamp') != '' ? $request->file('stamp')->store('stamps', 'public') : '';
-                $set['stamp'] = $stamp;
-            }
             $avatar = '';
             if ($request->file('avatar') != '') {
                 // Validator
@@ -408,7 +262,6 @@ class UserController extends Controller
                 }
                 $set['avatar'] = $avatar = $request->file('avatar')->store('avatars', 'public');
             }
-            // dd($set);
             DB::beginTransaction(); // Démarrer une transaction
 			// Mettre à jour l'utilisateur
 			$user->update($set);
@@ -459,7 +312,7 @@ class UserController extends Controller
                 ]);
             }
 			// Vérifier si des utilisateurs sont associés
-			$userCount = Consulardoc::where('user_id', $user->id)->count();
+			$userCount = Cash::where('created_by', $user->id)->count();
 			if ($userCount > 0) {
 				Log::warning("User::destroy - Cet utilisateur est associée à {$userCount} document(s).");
 				return response()->json([
@@ -474,7 +327,7 @@ class UserController extends Controller
 			Myhelper::logs(
 				Session::get('username'),
 				Session::get('profil'),
-				"Utilisateur: " . $user->firstname . ' ' . $user->lastname,
+				"Utilisateur: {$user->firstname} {$user->lastname}",
 				'Supprimer',
 				Session::get('avatar')
 			);
@@ -503,19 +356,13 @@ class UserController extends Controller
 		// Modal
 		$addmodal = '<a href="/users" class="btn btn-sm fw-bold btn-danger">Retour</a>
 		<a href="#" class="btn btn-sm fw-bold btn-success submitForm">Modifier</a>';
-        $civility = ['M.', 'Mme', 'Mlle'];
+        $gender = ['M' => 'Masculin', 'F' => 'Féminin'];
         $query = User::where('id', Auth::user()->id)->first();
         // Avatar
         if ($query->avatar == '')
         $query->avatar = $query->gender == 'M' ? 'avatars/homme.jpg' : 'avatars/femme.jpg';
-		$pays = Country::orderBy('libelle')->get();
-		$code = Country::where('code', $query->code)->first();
-		$nationality = Nationality::orderBy('libelle')->get();
-		$ville = Town::where('id', $query->town_id)->first();
-		$town = Town::where('country_id', $ville->country_id)->orderBy('libelle')->get();
-		$country = Country::where('embassy', 1)->orderBy('libelle')->get();
 		$profile = Profile::all();
-		return view('pages.users.account', compact('title', 'currentMenu', 'addmodal', 'query', 'code', 'ville', 'civility', 'town', 'pays', 'profile', 'country', 'nationality'));
+		return view('pages.users.account', compact('title', 'currentMenu', 'addmodal', 'query', 'gender', 'profile'));
 	}
     // Connexion
 	public function login()
@@ -578,13 +425,6 @@ class UserController extends Controller
                     'message' => "Votre profil est désactivé.",
                 ]);
             }
-            // Vérifier si le compte n'est pas rattaché à une Ambassade
-            if ($user->country && $user->country->embassy == 0) {
-                return response()->json([
-                    'status' => 0,
-                    'message' => "Votre compte n'est pas rattaché à une Ambassade.",
-                ]);
-            }
             // Tentative de connexion
             if (Auth::attempt($credentials)) {
                 // Connexion réussie
@@ -616,8 +456,6 @@ class UserController extends Controller
                 // Stocker des informations supplémentaires en session
                 Session::put('username', $username);
                 Session::put('profil', $user->profile->libelle ?? '');
-                Session::put('embassy', $user->country->libelle ?? '');
-                Session::put('map', $user->country->alpha ?? '');
                 Session::put('menus', $menus);
                 // Avatar
                 if ($user->avatar != '')

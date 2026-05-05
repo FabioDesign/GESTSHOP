@@ -23,10 +23,10 @@ class ProfileController extends Controller
 		//Menu
 		$currentMenu = 'profiles';
 		//Modal
-		$actionIds = Myhelper::actions(Auth::user()->profile_id, 7);
+		$actionIds = Myhelper::actions(Auth::user()->profile_id, 6);
 		$addmodal = in_array(2, $actionIds) ? '<a href="/profiles/create" class="btn btn-sm fw-bold btn-primary">Ajouter un profil</a>':'';
 		//Requete Read
-		$query = Profile::orderByDesc('created_at')->get();
+		$query = Profile::where('id', '!=', 1)->orderByDesc('created_at')->get();
 		Myhelper::logs(
 			Session::get('username'),
 			Session::get('profil'),

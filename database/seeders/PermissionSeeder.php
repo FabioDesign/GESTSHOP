@@ -21,7 +21,7 @@ class PermissionSeeder extends Seeder
                 'profile_id' => 1,
             ]
         );
-        // Demandes
+        // Caisses
         Permission::firstOrCreate(
             [
                 'menu_id' => 2,
@@ -78,7 +78,7 @@ class PermissionSeeder extends Seeder
                 'profile_id' => 1,
             ]
         );
-        // Documents
+        // Gestion de stock
         Permission::firstOrCreate(
             [
                 'menu_id' => 3,
@@ -114,7 +114,7 @@ class PermissionSeeder extends Seeder
                 'profile_id' => 1,
             ]
         );
-        // Pièces à fournir
+        // Autres charges
         Permission::firstOrCreate(
             [
                 'menu_id' => 4,
@@ -146,42 +146,6 @@ class PermissionSeeder extends Seeder
         Permission::firstOrCreate(
             [
                 'menu_id' => 4,
-                'action_id' => 5,
-                'profile_id' => 1,
-            ]
-        );
-        // Villes
-        Permission::firstOrCreate(
-            [
-                'menu_id' => 5,
-                'action_id' => 1,
-                'profile_id' => 1,
-            ]
-        );
-        Permission::firstOrCreate(
-            [
-                'menu_id' => 5,
-                'action_id' => 2,
-                'profile_id' => 1,
-            ]
-        );
-        Permission::firstOrCreate(
-            [
-                'menu_id' => 5,
-                'action_id' => 3,
-                'profile_id' => 1,
-            ]
-        );
-        Permission::firstOrCreate(
-            [
-                'menu_id' => 5,
-                'action_id' => 4,
-                'profile_id' => 1,
-            ]
-        );
-        Permission::firstOrCreate(
-            [
-                'menu_id' => 5,
                 'action_id' => 5,
                 'profile_id' => 1,
             ]
@@ -189,6 +153,42 @@ class PermissionSeeder extends Seeder
         // Gestion des Profils
         Permission::firstOrCreate(
             [
+                'menu_id' => 5,
+                'action_id' => 1,
+                'profile_id' => 1,
+            ]
+        );
+        Permission::firstOrCreate(
+            [
+                'menu_id' => 5,
+                'action_id' => 2,
+                'profile_id' => 1,
+            ]
+        );
+        Permission::firstOrCreate(
+            [
+                'menu_id' => 5,
+                'action_id' => 3,
+                'profile_id' => 1,
+            ]
+        );
+        Permission::firstOrCreate(
+            [
+                'menu_id' => 5,
+                'action_id' => 4,
+                'profile_id' => 1,
+            ]
+        );
+        Permission::firstOrCreate(
+            [
+                'menu_id' => 5,
+                'action_id' => 5,
+                'profile_id' => 1,
+            ]
+        );
+        // Gestion des Utilisateurs
+        Permission::firstOrCreate(
+            [
                 'menu_id' => 6,
                 'action_id' => 1,
                 'profile_id' => 1,
@@ -222,39 +222,10 @@ class PermissionSeeder extends Seeder
                 'profile_id' => 1,
             ]
         );
-        // Gestion des Utilisateurs
-        Permission::firstOrCreate(
-            [
-                'menu_id' => 7,
-                'action_id' => 1,
-                'profile_id' => 1,
-            ]
-        );
-        Permission::firstOrCreate(
-            [
-                'menu_id' => 7,
-                'action_id' => 2,
-                'profile_id' => 1,
-            ]
-        );
-        Permission::firstOrCreate(
-            [
-                'menu_id' => 7,
-                'action_id' => 3,
-                'profile_id' => 1,
-            ]
-        );
-        Permission::firstOrCreate(
-            [
-                'menu_id' => 7,
-                'action_id' => 5,
-                'profile_id' => 1,
-            ]
-        );
         // Piste d'audit
         Permission::firstOrCreate(
             [
-                'menu_id' => 8,
+                'menu_id' => 7,
                 'action_id' => 1,
                 'profile_id' => 1,
             ]

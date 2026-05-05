@@ -26,13 +26,9 @@ return new class extends Migration
             $table->tinyInteger('status')->default('0');
             $table->timestamps();
             $table->softDeletes();
-            $table->timestamp('activated_at')->nullable();
-            $table->timestamp('blocked_at')->nullable();
             $table->foreignId('created_by')->nullable();
             $table->foreignId('updated_by')->nullable();
             $table->foreignId('deleted_by')->nullable();
-            $table->foreignId('blocked_by')->nullable();
-            $table->foreignId('activated_by')->nullable();
             $table->integer('profile_id');
         });
     }

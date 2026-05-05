@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\{
+  CategoryController,
   DemandController,
   DashboardController,
   DocumentController,
@@ -11,7 +12,6 @@ use App\Http\Controllers\{
   PasswordController,
   ProfileController,
   StatusController,
-  TownController,
   LogsController,
   UserController,
 };
@@ -44,12 +44,12 @@ Route::controller(PasswordController::class)->group(function () {
 // Routes protégées par authentification
 Route::middleware(['auth'])->group(function () {
   Route::resources([
+    'category' => CategoryController::class,
     'demands' => DemandController::class,
     'documents' => DocumentController::class,
     'files' => FileController::class,
     'menus' => MenuController::class,
     'profiles' => ProfileController::class,
-    'towns' => TownController::class,
     'users' => UserController::class,
   ]);
   // Route pour Tableau de bord
@@ -64,8 +64,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/password', 'edit');
     Route::put('/password', 'update');
   });
-  // Routes pour liste des villes
-  Route::post('/towns/list', [TownController::class, 'list']);
   // Route pour les statuts
   Route::patch('/{type}/status/{uid}', [StatusController::class, 'update']);
   // Route pour les pistes d'audit

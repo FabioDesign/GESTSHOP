@@ -18,46 +18,20 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'code',
-        'civility',
         'lastname',
         'firstname',
         'gender',
-        'whatsapp',
         'number',
         'email',
         'password',
         'password_at',
-        'birthday_at',
-        'birthplace',
-        'size',
-        'hairs',
-        'complexion',
-        'profession',
-        'particular_sign',
-        'home_address',
-        'father_fullname',
-        'mother_fullname',
-        'person_fullname',
-        'person_number',
-        'person_address',
-        'arrival_at',
-        'stamp',
-        'signature',
         'avatar',
         'login_at',
         'status',
-        'activated_at',
-        'blocked_at',
         'created_by',
         'updated_by',
         'deleted_by',
-        'activated_by',
-        'blocked_by',
-        'town_id',
         'profile_id',
-        'embassy_id',
-        'nationality_id',
     ];
 
     /**
@@ -85,6 +59,7 @@ class User extends Authenticatable
         'password_at' => 'datetime',
         'activated_at' => 'datetime',
     ];
+
     // Génération de UUID unique
     protected static function boot()
     {
@@ -96,6 +71,7 @@ class User extends Authenticatable
             }
         });
     }
+
     // Relation avec le profil
     public function profile()
     {
