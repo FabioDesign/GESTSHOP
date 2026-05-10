@@ -23,4 +23,10 @@ class Product extends Model
             }
         });
     }
+    
+    // Relation avec la catégorie
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
 }

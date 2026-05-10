@@ -23,10 +23,12 @@ class UserController extends Controller
 		//Menu
 		$currentMenu = 'users';
 		//Modal
-		$actionIds = Myhelper::actions(Auth::user()->profile_id, 6);
+		$actionIds = Myhelper::actions(Auth::user()->profile_id, 7);
 		$addmodal = in_array(2, $actionIds) ? '<a href="/users/create" class="btn btn-sm fw-bold btn-primary">Ajouter un utilisateur</a>':'';
 		//Requete Read
-		$query = User::where('id', '!=', 1)->orderByDesc('created_at')->get();
+		$query = User::where('id', '!=', 1)
+        ->orderByDesc('created_at')
+        ->get();
 		Myhelper::logs(
 			Session::get('username'),
 			Session::get('profil'),
@@ -70,7 +72,9 @@ class UserController extends Controller
 		$addmodal = '<a href="/users" class="btn btn-sm fw-bold btn-danger">Retour</a>
 		<a href="#" class="btn btn-sm fw-bold btn-success submitForm">Ajouter</a>';
         $gender = ['M' => 'Masculin', 'F' => 'Féminin'];
-		$profile = Profile::where('id', '!=', 1)->orderBy('libelle')->get();
+		$profile = Profile::where('id', '!=', 1)
+        ->orderBy('libelle')
+        ->get();
 		return view('pages.users.create', compact('title', 'currentMenu', 'addmodal', 'gender', 'profile'));
 	}
     // Account creation
@@ -173,7 +177,9 @@ class UserController extends Controller
 		$addmodal = '<a href="/users" class="btn btn-sm fw-bold btn-danger">Retour</a>
 		<a href="#" class="btn btn-sm fw-bold btn-success submitForm">Modifier</a>';
         $gender = ['M' => 'Masculin', 'F' => 'Féminin'];
-		$profile = Profile::where('id', '!=', 1)->orderBy('libelle')->get();
+		$profile = Profile::where('id', '!=', 1)
+        ->orderBy('libelle')
+        ->get();
 		return view('pages.users.edit', compact('title', 'currentMenu', 'addmodal', 'query', 'gender', 'profile'));
 	}
     // Modification

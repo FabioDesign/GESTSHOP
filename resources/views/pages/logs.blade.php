@@ -92,8 +92,8 @@
                   <th>#</th>
                   <th>Auteur</th>
                   <th>Profil</th>
-                  <th>Libellé</th>
                   <th class="text-center">Action</th>
+                  <th>Libellé</th>
                   <th class="text-center">Date</th>
                 </tr>
               </thead>
@@ -116,8 +116,8 @@
                 </div>
               </td>
               <td>${data.profil}</td>
-              <td>${data.libelle}</td>
               <td class="text-center"><span class="badge badge-light-${data.color} fw-bold px-4 py-3">${data.action}</span></td>
+              <td>${data.libelle}</td>
               <td class="text-center">${dateHour}</td>
             </tr>`;
             i++;

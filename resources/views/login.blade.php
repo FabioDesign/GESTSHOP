@@ -31,7 +31,7 @@
 			<!--begin::Authentication - Sign-in -->
 			<div class="d-flex flex-column flex-column-fluid flex-lg-row">
 				<!--begin::Aside-->
-				<div class="d-flex flex-center w-lg-50 pt-15 pt-lg-0 px-10" style="background-color:#009688;">
+				<div class="d-flex flex-center w-lg-50 pt-15 pt-lg-0 px-10 bg-home">
 					<!--begin::Aside-->
 					<div class="d-flex flex-column-fluid flex-lg-start flex-column">
 						<!--begin::Title-->

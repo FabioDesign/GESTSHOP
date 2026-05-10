@@ -4,10 +4,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\{
   CategoryController,
-  DemandController,
+  CashController,
   DashboardController,
-  DocumentController,
-  FileController,
+  ProductController,
   MenuController,
   PasswordController,
   ProfileController,
@@ -45,15 +44,16 @@ Route::controller(PasswordController::class)->group(function () {
 Route::middleware(['auth'])->group(function () {
   Route::resources([
     'category' => CategoryController::class,
-    'demands' => DemandController::class,
-    'documents' => DocumentController::class,
-    'files' => FileController::class,
+    'cashs' => CashController::class,
+    'products' => ProductController::class,
     'menus' => MenuController::class,
     'profiles' => ProfileController::class,
     'users' => UserController::class,
   ]);
   // Route pour Tableau de bord
   Route::get('/dashboard', [DashboardController::class, 'index']);
+  // Route pour Gestion des stocks
+  Route::get('/geststock', [ProductController::class, 'geststock']);
   // Route pour les utilisateurs
   Route::controller(UserController::class)->group(function () {
     Route::get('/account', 'account');

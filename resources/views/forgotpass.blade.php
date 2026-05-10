@@ -31,28 +31,15 @@
 			<!--begin::Authentication - Sign-in -->
 			<div class="d-flex flex-column flex-column-fluid flex-lg-row">
 				<!--begin::Aside-->
-				<div class="d-flex flex-center w-lg-50 pt-15 pt-lg-0 px-10" style="background-color:#009688;">
+				<div class="d-flex flex-center w-lg-50 pt-15 pt-lg-0 px-10 bg-home">
 					<!--begin::Aside-->
 					<div class="d-flex flex-column-fluid flex-lg-start flex-column">
 						<!--begin::Title-->
-						<div class="title-left">
-							<img alt="Logo" src="/assets/img/amoirie.png" class="h-100px" />
-							<h2 class="text-white m-0">République de Guinée</h2>
+						<div class="m-auto symbol symbol-circle symbol-lg-75">
+							<img alt="Logo" src="/assets/img/shop.jpg" class="h-300px img-responsive" />
 						</div>
-						<div class="body-left">
-							<h1 class="text-white m-0">Gestion de documents consulaires</h1>
-						</div>
-						<div class="footer-left">
-							<h3 class="text-white fw-normal m-0">Portail officiel des démarches consulaires des Ambassades de la Guinée.</h3>
-						</div>
-						<div class="footer-button">
-							@foreach($query as $data)
-							<a href="{{ asset('storage/' . $data->specimen) }}" target="_blank">
-								<button class="btn">
-									<i class="{{ $data->icone }}"></i><span>{{ $data->libelle }}</span>
-								</button>
-							</a>
-							@endforeach
+						<div class="m-auto">
+							<h1 class="text-white mt-10">Gestion Shop de Marius</h1>
 						</div>
 						<!--end::Title-->
 					</div>

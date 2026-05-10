@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('firstname');
             $table->string('gender', 1);
             $table->string('number', 20)->unique();
-            $table->string('email')->nullable();
-            $table->string('password')->nullable();
-            $table->timestamp('password_at')->nullable();
+            $table->string('email');
+            $table->string('password');
+            $table->timestamp('password_at');
             $table->text('avatar')->nullable();
             $table->timestamp('login_at')->nullable();
             $table->tinyInteger('status')->default('0');

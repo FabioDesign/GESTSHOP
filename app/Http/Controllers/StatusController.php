@@ -6,7 +6,7 @@ use Session;
 use Myhelper;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\{Auth, Log};
-use App\Models\{Document, File, Profile, SubCategory, User};
+use App\Models\{Profile, Product, User};
 
 class StatusController extends Controller
 {
@@ -18,21 +18,17 @@ class StatusController extends Controller
         try {
             // 🔁 Mapping dynamique
             $models = [
-                'documents' => [
-                    'model' => Document::class,
-                    'label' => 'Document'
-                ],
-                'files' => [
-                    'model' => File::class,
-                    'label' => 'Pièce à fournir'
+                'category' => [
+                    'model' => Product::class,
+                    'label' => 'Categorie'
                 ],
                 'profiles' => [
                     'model' => Profile::class,
                     'label' => 'Profil'
                 ],
-                'category' => [
-                    'model' => SubCategory::class,
-                    'label' => 'Categorie'
+                'product' => [
+                    'model' => Product::class,
+                    'label' => 'Produit'
                 ],
                 'users' => [
                     'model' => User::class,

@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use Session;
 use Myhelper;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Models\{Document, User};
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\{DB, Hash, Log, Validator, Auth};
 
@@ -15,11 +15,7 @@ class PasswordController extends Controller
     // Connexion
 	public function index()
     {
-        //Requete Read
-        $query = Document::where('status', 1)
-        ->orderBy('position')
-        ->get();
-        return view('forgotpass', compact('query'));
+        return view('forgotpass');
 	}
 	//Logic Forgot password
 	public function store(request $request)

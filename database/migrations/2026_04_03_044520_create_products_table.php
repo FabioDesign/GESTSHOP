@@ -15,16 +15,19 @@ return new class extends Migration
             $table->increments('id');
             $table->uuid('uid');
             $table->string('libelle');
-            $table->decimal('price', 10, 0);
-            $table->decimal('stock', 5, 0);
-            $table->decimal('seuil', 5, 0);
-            $table->tinyInteger('status');
+            $table->decimal('prix_achat', 10, 0)->default('0');
+            $table->decimal('prix_vente', 10, 0)->default('0');
+            $table->decimal('seuil', 5, 0)->default('0');
+            $table->decimal('stock', 5, 0)->default('0');
+            $table->text('photo');
+            $table->text('description');
+            $table->tinyInteger('status')->default('1');
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->nullable();
             $table->foreignId('updated_by')->nullable();
             $table->foreignId('deleted_by')->nullable();
-            $table->tinyInteger('type_id');
+            $table->tinyInteger('category_id')->default('0');
         });
     }
 

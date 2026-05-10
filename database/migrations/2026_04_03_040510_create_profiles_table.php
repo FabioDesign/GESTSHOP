@@ -15,7 +15,7 @@ return new class extends Migration
             $table->smallIncrements('id');
             $table->uuid('uid');
             $table->string('libelle', 50);
-            $table->text('description')->nullable();
+            $table->text('description');
             $table->tinyInteger('status')->default('1');
             $table->timestamps();
             $table->softDeletes();

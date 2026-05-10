@@ -28,7 +28,6 @@ class AppServiceProvider extends ServiceProvider
             Cash::class,
             Product::class,
             Profile::class,
-            SubCategory::class,
             User::class,
         ];
 

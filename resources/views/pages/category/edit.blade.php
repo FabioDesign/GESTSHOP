@@ -21,6 +21,12 @@
             <input type="text" name="libelle" value="{{ old('libelle', $query->libelle) }}" class="form-control requiredField" placeholder="Saisir la categorie" />
           </div>
       </div>
+      <div class="row mb-2">
+          <div class="col-md-12 col-12">
+              <label class="fw-bolder text-dark fs-5">Description :</label>
+              <textarea name="description" class="form-control" placeholder="Saisir la description">{{ old('description', $query->description) }}</textarea>
+          </div>
+      </div>
       <span class="msgError" style="display: none;"></span>
     </form>
   </div>

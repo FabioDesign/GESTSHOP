@@ -23,7 +23,7 @@
   right: 15px;
   cursor: pointer;
   position: absolute;
-  color:#009688 !important;
+  color:#3A8EBA !important;
   font-size: 15px !important;
 }
 .backPass {
@@ -135,12 +135,12 @@
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 .title-signin {
-  color:#009688;
+  color:#3A8EBA;
   font-size: 3rem;
   font-weight: bold !important;
 }
 .subtitle-signin {
-  color:#009688;
+  color:#3A8EBA;
   font-size: 1.2rem;
   margin: 10px 0 20px;
 }
@@ -149,14 +149,14 @@
   padding: 14px;
   border: none;
   border-radius: 25px;
-  background: #009688;
+  background: #3A8EBA;
   color: white;
   font-size: 16px;
   cursor: pointer;
   box-shadow: 0 5px 10px rgba(0,150,136,0.3);
 }
 .btn-signin:hover {
-  background: #00796B;
+  background: #046aa1;
 }
 .app-header {
   position: relative;
@@ -216,4 +216,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.bg-home {
+  background-color: #3A8EBA !important;
 }

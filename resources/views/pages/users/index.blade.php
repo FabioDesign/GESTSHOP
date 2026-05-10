@@ -22,43 +22,67 @@
         <tbody>
           @php
             $i = 1;
+            $href_edit = $class_status = $class_delete = '';
+            $color_edit = $color_status = $color_delete = 'text-muted';
+            if (in_array(4, $actionIds)) {
+              $class_status = "status";
+              $color_status = 'text-info';
+            }
+            if (in_array(5, $actionIds)) {
+              $class_delete = "status";
+              $color_delete = 'text-danger';
+            }
             foreach ($query as $data) :
-            $action = 'Activé';
-            $badge = 'badge-light-danger';
+            if (in_array(3, $actionIds)) {
+              $href_edit = "/users/{$data->uid}/edit";
+              $color_edit = 'text-warning';
+            }
             if ($data->status == 1) {
               $status = 'Activé';
               $action = 'Désactivé';
               $badge = 'badge-light-success';
-            } else if ($data->status == 2)
-              $status = 'Bloqué';
-            else
-              $status = 'Inactif';
+            } else {
+              $status = 'Désactivé';
+              $action = 'Activé';
+              $badge = 'badge-light-danger';
+            }
           @endphp
           <tr>
             <td class="align-middle">{{ $i++ }}</td>
-            <td class="align-middle">{{ $data->firstname . " " . $data->lastname }}</td>
+            <td class="align-middle">{{ $data->firstname }} {{ $data->lastname }}</td>
             <td class="align-middle">{{ $data->gender }}</td>
             <td class="align-middle">{{ $data->profile->libelle }}</td>
             <td class="align-middle">{{ $data->number }}</td>
             <td class="text-center align-middle">{{ $data->created_at->format('d-m-Y H:i') }}</td>
             <td class="text-center align-middle"><span data-kt-element="status" class="badge {{ $badge }} fw-bold px-4 py-3">{{ $status }}</span></td>
-            <td class="text-center align-middle">
-              <a href="/users/{{ $data->uid }}" data-bs-toggle="tooltip" data-bs-theme="dark" data-bs-placement="top" title="Voir détail document"><i class="fas fa-eye fa-size text-primary me-1"></i></a>
-              @if(in_array(3, $actionIds))
-              <a href="/users/{{ $data->uid }}/edit" data-bs-toggle="tooltip" data-bs-theme="dark" data-bs-placement="top" title="Modifier l'utilisateur"><i class="fas fa-edit fa-size text-warning me-1"></i></a>
-              @else
-              <a href="#"><i class="fas fa-edit fa-size text-muted me-1"></i></a>
-              @endif
-              @if(in_array(4, $actionIds))
-              <a href="#" class="status" data-url="/users/status/{{ $data->uid }}" data-type="PATCH" data-bs-toggle="tooltip" data-bs-theme="dark" data-bs-placement="top" title="{{ $action }} l'utilisateur"><i class="fas fa-question fa-size text-info"></i></a>
-              @else
-              <a href="#"><i class="fas fa-question fa-size text-muted"></i></a>
-              @endif
-              @if(in_array(5, $actionIds))
-              <a href="#" class="status" data-url="/users/{{ $data->uid }}" data-type="DELETE" data-bs-toggle="tooltip" data-bs-theme="dark" data-bs-placement="top" title="Supprimé l'utilisateur"><i class="fas fa-trash-alt fa-size text-danger"></i></a>
-              @else
-              <a href="#"><i class="fas fa-trash-alt fa-size text-muted"></i></a>
-              @endif
+            <td class="text-end align-middle">
+              <a href="/users/{{ $data->uid }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Voir détail de l'utilisateur" class="btn btn-icon btn-bg-light btn-sm me-1">
+                <i class="ki-duotone ki-switch text-primary fs-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </a>
+              <a href="{{ $href_edit }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier l'utilisateur" class="btn btn-icon btn-bg-light btn-sm me-1">
+                <i class="ki-duotone ki-pencil {{ $color_edit }} fs-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </a>
+              <a href="#" data-url="/users/status/{{ $data->uid }}" data-type="PATCH" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $action }} l'utilisateur" class="btn btn-icon btn-bg-light btn-sm me-1 {{ $class_status }}">
+                <i class="ki-duotone ki-filter {{ $color_status }} fs-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </a>
+              <a href="#" data-url="/users/{{ $data->uid }}" data-type="DELETE" data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimé l'utilisateur" class="btn btn-icon btn-bg-light btn-sm {{ $class_delete }}">
+                <i class="ki-duotone ki-trash {{ $color_delete }} fs-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+              </a>
             </td>
           </tr>
           @php endforeach; @endphp

@@ -7,7 +7,7 @@ use Myhelper;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Models\{Category, SubCategory, Transaction};
+use App\Models\{Category, Product, Transaction};
 use Illuminate\Support\Facades\{Auth, DB, Log, Validator};
 
 class CategoryController extends Controller
@@ -23,12 +23,12 @@ class CategoryController extends Controller
 		//Menu
 		$currentMenu = 'category';
 		//Modal
-		$actionIds = Myhelper::actions(Auth::user()->profile_id, 4);
+		$actionIds = Myhelper::actions(Auth::user()->profile_id, 5);
 		$addmodal = in_array(2, $actionIds) ? '<a href="/category/create" class="btn btn-sm fw-bold btn-primary">Ajouter une categorie</a>':'';
 		//Requete Read
-		$query = SubCategory::select('uid', 'sub_categories.libelle', 'sub_categories.status', 'sub_categories.created_at', 'categories.libelle AS category')
-		->join('categories', 'categories.id','=','sub_categories.category_id')
-        ->orderByDesc('created_at')->get();
+		$query = Product::where('category_id', '!=', 0)
+		->orderByDesc('created_at')
+		->get();
 		Myhelper::logs(
 			Session::get('username'),
 			Session::get('profil'),
@@ -38,6 +38,26 @@ class CategoryController extends Controller
 		);
 		return view('pages.category.index', compact('title', 'currentMenu', 'addmodal', 'actionIds', 'query'));
 	}
+	// Afficher le détail de la categorie
+	public function show($uid)
+	{
+        if (!Auth::check()) {
+            return redirect('/');
+        }
+		// Title
+		$title = 'Détail de la categorie';
+		// Menu
+		$currentMenu = 'category';
+		// Vérifier si la categorie existe
+		$query = Product::where('uid', $uid)->first();
+		if (!$query) {
+			Log::warning("Category::show - Aucune categorie trouvée pour l'UID : {$uid}");
+			return redirect('/category');
+		}
+		// Modal
+		$addmodal = '<a href="/category" class="btn btn-sm fw-bold btn-danger">Retour</a>';
+		return view('pages.category.show', compact('title', 'currentMenu', 'addmodal', 'query'));
+	}
     //Liste des Categories
 	public function create()
 	{
@@ -45,7 +65,7 @@ class CategoryController extends Controller
             return redirect('/');
         }
 		//Title
-		$title = "Ajout d'une categories";
+		$title = "Ajout d'une categorie";
 		//Menu
 		$currentMenu = 'category';
 		//Modal
@@ -65,7 +85,7 @@ class CategoryController extends Controller
 		$validator = Validator::make($request->all(), [
 			'libelle' => [
 				'required',
-				Rule::unique('sub_categories')->where(function ($query) {
+				Rule::unique('products')->where(function ($query) {
 					return $query->whereNull('deleted_at');
 				}),
 			],
@@ -85,11 +105,12 @@ class CategoryController extends Controller
 		}
 		$set = [
 			'libelle' => $request->libelle,
+			'description' => $request->description,
 			'category_id' => $request->category_id,
 		];
 		DB::beginTransaction();
 		try {
-			SubCategory::create($set);
+			Product::create($set);
 			DB::commit();
 			Myhelper::logs(
 				Session::get('username'),
@@ -111,7 +132,7 @@ class CategoryController extends Controller
 			]);
 		}
 	}
-	// Afficher le formulaire d'édition d'une categories
+	// Afficher le formulaire d'édition d'une categorie
 	public function edit($uid)
 	{
         if (!Auth::check()) {
@@ -122,7 +143,7 @@ class CategoryController extends Controller
 		// Menu
 		$currentMenu = 'category';
 		// Vérifier si la categorie existe
-		$query = SubCategory::where('uid', $uid)->first();
+		$query = Product::where('uid', $uid)->first();
 		if (!$query) {
 			Log::warning("Category::edit - Aucune categorie trouvée pour l'UID : {$uid}");
 			return redirect('/category');
@@ -142,8 +163,8 @@ class CategoryController extends Controller
         }
         try {
 			// Vérifier si le categories existe
-			$subCategory = SubCategory::where('uid', $uid)->first();
-			if (!$subCategory) {
+			$product = Product::where('uid', $uid)->first();
+			if (!$product) {
 				Log::warning("Category::update - Aucune categorie trouvée pour l'UID : {$uid}");
 				return response()->json([
 					'status' => 0,
@@ -154,7 +175,7 @@ class CategoryController extends Controller
 			$validator = Validator::make($request->all(), [
 				'libelle' => [
 					'required',
-					Rule::unique('sub_categories')->where(function ($query) use ($uid) {
+					Rule::unique('products')->where(function ($query) use ($uid) {
 						return $query->where('uid', '!=', $uid)->whereNull('deleted_at');
 					}),
 				],
@@ -174,11 +195,12 @@ class CategoryController extends Controller
 			}
 			$set = [
 				'libelle' => $request->libelle,
+				'description' => $request->description,
 				'category_id' => $request->category_id,
 			];
 			DB::beginTransaction(); // Démarrer une transaction
 			// Mettre à jour la categorie
-			$subCategory->update($set);
+			$product->update($set);
 			DB::commit(); // Valider la transaction
 			Myhelper::logs(
 				Session::get('username'),
@@ -208,8 +230,8 @@ class CategoryController extends Controller
         }
 		try {
 			// Vérifier si la categorie existe
-			$subCategory = SubCategory::where('uid', $uid)->first();
-			if (!$subCategory) {
+			$product = Product::where('uid', $uid)->first();
+			if (!$product) {
 				Log::warning("Category::destroy - Aucune categorie trouvée pour l'UID : {$uid}");
 				return response()->json([
 					'status' => 0,
@@ -217,7 +239,7 @@ class CategoryController extends Controller
 				]);
 			}
 			// Vérifier si des transactions sont associés
-			$categoryCount = Transaction::where('subcategory_id', $subCategory->id)->count();
+			$categoryCount = Transaction::where('product_id', $product->id)->count();
 			if ($categoryCount > 0) {
 				Log::warning("Category::destroy - Cette categorie est associée à {$categoryCount} transaction(s).");
 				return response()->json([
@@ -227,12 +249,12 @@ class CategoryController extends Controller
 			}
 			DB::beginTransaction();
 			// Supprimer la categorie
-			$subCategory->delete();
+			$product->delete();
 			DB::commit();
 			Myhelper::logs(
 				Session::get('username'),
 				Session::get('profil'),
-				"Categories: " . $subCategory->libelle,
+				"Categories: " . $product->libelle,
 				'Supprimer',
 				Session::get('avatar')
 			);

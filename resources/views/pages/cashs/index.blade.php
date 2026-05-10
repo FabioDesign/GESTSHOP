@@ -10,8 +10,9 @@
         <thead>
           <tr class="fw-bolder fs-6 text-gray-800 px-7">
             <th>#</th>
-            <th>Type</th>
-            <th>Categorie</th>
+            <th class="text-center">Entrées</th>
+            <th class="text-center">Sorties</th>
+            <th class="text-center">Solde</th>
             <th class="text-center">Date</th>
             <th class="text-center">Statut</th>
             <th class="text-center">Action</th>
@@ -32,45 +33,59 @@
             }
             foreach ($query as $data) :
             if (in_array(3, $actionIds)) {
-              $href_edit = "/category/{$data->uid}/edit";
+              $href_edit = "/cashs/{$data->uid}/edit";
               $color_edit = 'text-warning';
             }
-            if ($data->status == 1) {
-              $status = 'Activé';
-              $action = 'Désactivé';
-              $badge = 'badge-light-success';
-            } else {
-              $status = 'Désactivé';
-              $action = 'Activé';
-              $badge = 'badge-light-danger';
+            switch ($data->status) {
+              case 1 :
+                $status = 'Transmis';
+                $action = 'Valider/Rejeter';
+                $badge = 'badge-light-warning';
+                break;
+              case 2 :
+                $status = 'Validé';
+                $action = 'Imprimer';
+                $badge = 'badge-light-success';
+                break;
+              case 3 :
+                $status = 'Rejeté';
+                $action = 'Dupliquer';
+                $badge = 'badge-light-danger';
+                break;
+              default :
+                $status = 'Brouillon';
+                $action = 'Transmettre';
+                $badge = 'badge-light-primary';
             }
+            $balance = $data->cash_in - $data->cash_out;
           @endphp
           <tr>
             <td class="align-middle">{{ $i++ }}</td>
-            <td class="align-middle">{{ $data->category->libelle }}</td>
-            <td class="align-middle">{{ $data->libelle }}</td>
-            <td class="text-center align-middle">{{ $data->created_at->format('d-m-Y H:i') }}</td>
+            <td class="text-center align-middle">{{ $data->cash_in }}</td>
+            <td class="text-center align-middle">{{ $data->cash_out }}</td>
+            <td class="text-center align-middle">{{ $balance }}</td>
+            <td class="text-center align-middle">{{ $data->date_at->format('d-m-Y') }}</td>
             <td class="text-center align-middle"><span data-kt-element="status" class="badge {{ $badge }} fw-bold px-4 py-3">{{ $status }}</span></td>
             <td class="text-end align-middle">
-              <a href="/category/{{ $data->uid }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Voir détail de categorie" class="btn btn-icon btn-bg-light btn-sm me-1">
+              <a href="/cashs/{{ $data->uid }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Voir détail de la caisse" class="btn btn-icon btn-bg-light btn-sm me-1">
                 <i class="ki-duotone ki-switch text-primary fs-2">
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>
               </a>
-              <a href="{{ $href_edit }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier la categorie" class="btn btn-icon btn-bg-light btn-sm me-1">
+              <a href="{{ $href_edit }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier la caisse" class="btn btn-icon btn-bg-light btn-sm me-1">
                 <i class="ki-duotone ki-pencil {{ $color_edit }} fs-2">
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>
               </a>
-              <a href="#" data-url="/category/status/{{ $data->uid }}" data-type="PATCH" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $action }} la categorie" class="btn btn-icon btn-bg-light btn-sm me-1 {{ $class_status }}">
+              <a href="#" data-url="/cashs/status/{{ $data->uid }}" data-type="PATCH" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $action }} la caisse" class="btn btn-icon btn-bg-light btn-sm me-1 {{ $class_status }}">
                 <i class="ki-duotone ki-filter {{ $color_status }} fs-2">
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>
               </a>
-              <a href="#" data-url="/category/{{ $data->uid }}" data-type="DELETE" data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimé la categorie" class="btn btn-icon btn-bg-light btn-sm {{ $class_delete }}">
+              <a href="#" data-url="/cashs/{{ $data->uid }}" data-type="DELETE" data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimé la caisse" class="btn btn-icon btn-bg-light btn-sm {{ $class_delete }}">
                 <i class="ki-duotone ki-trash {{ $color_delete }} fs-2">
                   <span class="path1"></span>
                   <span class="path2"></span>

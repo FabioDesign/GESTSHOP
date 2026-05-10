@@ -33,16 +33,24 @@ class MenuSeeder extends Seeder
             ['libelle' => "Gestion de stock"],
             [
                 'icone' => "ki-abstract-26",
-                'target' => "products",
+                'target' => "geststock",
                 'position' => 3,
             ]
         );
         Menu::firstOrCreate(
-            ['libelle' => "Autres charges"],
+            ['libelle' => "Produits"],
+            [
+                'icone' => "ki-bank",
+                'target' => "products",
+                'position' => 4,
+            ]
+        );
+        Menu::firstOrCreate(
+            ['libelle' => "Categories"],
             [
                 'icone' => "ki-abstract-25",
                 'target' => "category",
-                'position' => 4,
+                'position' => 5,
             ]
         );
         Menu::firstOrCreate(
@@ -50,7 +58,7 @@ class MenuSeeder extends Seeder
             [
                 'icone' => "ki-map",
                 'target' => "profiles",
-                'position' => 5,
+                'position' => 6,
             ]
         );
         Menu::firstOrCreate(
@@ -58,7 +66,7 @@ class MenuSeeder extends Seeder
             [
                 'icone' => "ki-address-book",
                 'target' => "users",
-                'position' => 6,
+                'position' => 7,
             ]
         );
         Menu::firstOrCreate(
@@ -66,7 +74,7 @@ class MenuSeeder extends Seeder
             [
                 'icone' => "ki-code",
                 'target' => "logs",
-                'position' => 7,
+                'position' => 8,
             ]
         );
     }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Logs;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Auth};
+use Illuminate\Support\Facades\{DB, Auth};
 
 class LogsController extends Controller
 {
@@ -24,7 +24,7 @@ class LogsController extends Controller
     //Liste de Pistes d'audit
 	public function getLogs() {
 		//Requete Read-
-		$query = Logs::orderByDesc('created_at')->get();
+		$query = DB::select('CALL sp_get_logs()');
 		return response()->json([
 			'status' => true,
 			'data' => $query,
