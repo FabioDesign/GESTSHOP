@@ -57,7 +57,6 @@
 
 @section('scripts')
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
   <script>
     function formatDateTime(dateString) {
       const d = new Date(dateString);
@@ -73,7 +72,7 @@
     }
     const getLogs = async () => {
       try {
-        const response = await axios.get( '/getLogs');
+        const response = await axios.get('/getLogs');
         return response.data.data || [];
       } catch (e) {
         console.error(e);

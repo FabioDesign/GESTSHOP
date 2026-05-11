@@ -99,7 +99,7 @@ class CategoryController extends Controller
 		if ($validator->fails()) {
 			Log::warning("Category::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => $validator->errors()->first(),
 			]);
 		}
@@ -120,14 +120,14 @@ class CategoryController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Categorie enregistrée avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();
 			Log::warning("Category::store - Erreur : {$e->getMessage()} " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de l'enregistrement.",
 			]);
 		}
@@ -167,7 +167,7 @@ class CategoryController extends Controller
 			if (!$product) {
 				Log::warning("Category::update - Aucune categorie trouvée pour l'UID : {$uid}");
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => "Categorie non trouvée.",
 				]);
 			}
@@ -189,7 +189,7 @@ class CategoryController extends Controller
 			if ($validator->fails()) {
 				Log::warning("Category::update - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => $validator->errors()->first(),
 				]);
 			}
@@ -210,14 +210,14 @@ class CategoryController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Categorie modifiée avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack(); // Annuler la transaction en cas d'erreur
 			Log::warning("Category::update - Erreur : {$e->getMessage()} " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de la modification.",
 			]);
 		}
@@ -234,7 +234,7 @@ class CategoryController extends Controller
 			if (!$product) {
 				Log::warning("Category::destroy - Aucune categorie trouvée pour l'UID : {$uid}");
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => "Categorie non trouvée.",
 				]);
 			}
@@ -243,7 +243,7 @@ class CategoryController extends Controller
 			if ($categoryCount > 0) {
 				Log::warning("Category::destroy - Cette categorie est associée à {$categoryCount} transaction(s).");
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => "Cette categorie est associée à {$categoryCount} transaction(s).",
 				]);
 			}
@@ -259,15 +259,42 @@ class CategoryController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Categorie supprimée avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();
 			Log::warning("Category::destroy - Erreur : {$e->getMessage()}");
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de la suppression.",
+			]);
+		}
+	}
+    //Liste des produits
+	public function getCategory($type)
+	{
+        if (!Auth::check()) {
+            return 'x';
+        }
+		try {
+			//Requete Read
+			$query = Product::select('id', 'libelle', 'category_id')
+            ->where('category_id', $type)
+			->orWhere('category_id', 0)
+			->orderByDesc('category_id')
+			->orderBy('libelle')
+			->get();
+			return response()->json([
+				'status' => true,
+				'data' => $query,
+			]);
+		} catch (\Exception $e) {
+			DB::rollBack();
+			Log::warning("Category::getCategory - Erreur : {$e->getMessage()}");
+			return response()->json([
+				'status' => false,
+				'message' => "Erreur de chargement des données.",
 			]);
 		}
 	}

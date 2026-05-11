@@ -115,7 +115,7 @@ class UserController extends Controller
 		if ($validator->fails()) {
 			Log::warning("User::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => $validator->errors()->first(),
 			]);
 		}
@@ -145,14 +145,14 @@ class UserController extends Controller
                 Session::get('avatar')
             );
             return response()->json([
-                'status' => 1,
+                'status' => true,
                 'message' => "Utilisateur enregistré avec succès.",
             ]);
         } catch (\Exception $e) {
             DB::rollBack(); // Annuler la transaction en cas d'erreur
             Log::warning("User::store - Erreur : {$e->getMessage()} " . json_encode($request->all()));
             return response()->json([
-                'status' => 0,
+                'status' => false,
                 'message' => "Erreur lors de l'enregistrement.",
             ]);
         }
@@ -194,7 +194,7 @@ class UserController extends Controller
             if (!$user) {
                 Log::warning("User::update - Aucun utilisateur trouvé pour l'UID : {$uid}");
                 return response()->json([
-                    'status' => 0,
+                    'status' => false,
                     'message' => "Utilisateur non trouvé.",
                 ]);
             }
@@ -231,7 +231,7 @@ class UserController extends Controller
             if ($validator->fails()) {
                 Log::warning("User::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
                 return response()->json([
-                    'status' => 0,
+                    'status' => false,
                     'message' => $validator->errors()->first(),
                 ]);
             }
@@ -262,7 +262,7 @@ class UserController extends Controller
                 if ($validator->fails()) {
                     Log::warning("User::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
                     return response()->json([
-                        'status' => 0,
+                        'status' => false,
                         'message' => $validator->errors()->first(),
                     ]);
                 }
@@ -289,14 +289,14 @@ class UserController extends Controller
                 Session::put('avatar', $avatar);
             }
             return response()->json([
-                'status' => 1,
+                'status' => true,
                 'message' => "Utilisateur modifié avec succès.",
             ]);
         } catch (\Exception $e) {
             DB::rollBack(); // Annuler la transaction en cas d'erreur
             Log::warning("User::store - Erreur : {$e->getMessage()} " . json_encode($request->all()));
             return response()->json([
-                'status' => 0,
+                'status' => false,
                 'message' => "Erreur lors de la modification.",
             ]);
         }
@@ -313,7 +313,7 @@ class UserController extends Controller
             if (!$user) {
                 Log::warning("User::destroy - Aucun utilisateur trouvé pour l'UID : {$uid}");
                 return response()->json([
-                    'status' => 0,
+                    'status' => false,
                     'message' => "Utilisateur non trouvé.",
                 ]);
             }
@@ -322,7 +322,7 @@ class UserController extends Controller
 			if ($userCount > 0) {
 				Log::warning("User::destroy - Cet utilisateur est associée à {$userCount} document(s).");
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => "Cet utilisateur est associée à {$userCount} document(s).",
 				]);
 			}
@@ -338,14 +338,14 @@ class UserController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Utilisateur supprimé avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();
 			Log::warning("User::destroy - Erreur : {$e->getMessage()}");
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de la suppression.",
 			]);
 		}
@@ -390,7 +390,7 @@ class UserController extends Controller
         if ($validator->fails()) {
             Log::warning("User::auth - Validator : {$validator->errors()->first()}");
             return response()->json([
-                'status' => 0,
+                'status' => false,
                 'message' => $validator->errors()->first(),
             ]);
         }
@@ -401,33 +401,33 @@ class UserController extends Controller
             $credentials = [
                 $loginField => $request->login,
                 'password' => $request->password,
-                'status' => 1, // Compte actif
+                'status' => true, // Compte actif
             ];
             // Vérifier d'abord si l'utilisateur existe et son statut
             $user = User::where($loginField, $request->login)->first();
             if (!$user) {
                 return response()->json([
-                    'status' => 0,
+                    'status' => false,
                     'message' => "Login ou mot de passe incorrect.",
                 ]);
             }
             // Vérifier le statut du compte
             if ($user->status == 0) {
                 return response()->json([
-                    'status' => 0,
+                    'status' => false,
                     'message' => "Votre compte est inactif.",
                 ]);
             }
             if ($user->status == 2) {
                 return response()->json([
-                    'status' => 0,
+                    'status' => false,
                     'message' => "Votre compte est bloqué.",
                 ]);
             }
             // Vérifier le statut du profil
             if ($user->profile && $user->profile->status == 0) {
                 return response()->json([
-                    'status' => 0,
+                    'status' => false,
                     'message' => "Votre profil est désactivé.",
                 ]);
             }
@@ -454,7 +454,7 @@ class UserController extends Controller
                     Log::warning("Aucun menu trouvé pour ce profil : " . $user->profile_id);
                     Auth::logout();
                     return response()->json([
-                        'status' => 0,
+                        'status' => false,
                         'message' => "Aucun menu trouvé pour ce profil.",
                     ]);
                 }
@@ -478,21 +478,21 @@ class UserController extends Controller
                     $avatar
                 );
                 return response()->json([
-                    'status' => 1,
+                    'status' => true,
                     'data' => $page,
                 ]);
             } else {
                 // Mot de passe incorrect
                 Log::warning("Tentative de connexion échouée pour : {$request->login}");
                 return response()->json([
-                    'status' => 0,
+                    'status' => false,
                     'message' => "Login ou mot de passe incorrect.",
                 ]);
             }
         } catch (\Exception $e) {
             Log::warning("Echec de connexion : {$e->getMessage()}" . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Service indisponible, veuillez réessayer plus tard !",
 			]);
         }

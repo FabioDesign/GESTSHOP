@@ -114,7 +114,7 @@ class ProductController extends Controller
 		if ($validator->fails()) {
 			Log::warning("Product::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => $validator->errors()->first(),
 			]);
 		}
@@ -139,14 +139,14 @@ class ProductController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Produit enregistré avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();
 			Log::warning("Product::store - Erreur : {$e->getMessage()} " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de l'enregistrement.",
 			]);
 		}
@@ -209,7 +209,7 @@ class ProductController extends Controller
 		if ($validator->fails()) {
 			Log::warning("Product::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => $validator->errors()->first(),
 			]);
 		}
@@ -218,7 +218,7 @@ class ProductController extends Controller
 		if (!$query) {
 			Log::warning("Product::update - Aucune produit trouvé pour l'UID : {$uid}");
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Produit non trouvé.",
 			]);
 		}
@@ -243,7 +243,7 @@ class ProductController extends Controller
 			if ($validator->fails()) {
 				Log::warning("Product::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => $validator->errors()->first(),
 				]);
 			}
@@ -262,14 +262,14 @@ class ProductController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Produit modifié avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack(); // Annuler la transaction en cas d'erreur
 			Log::warning("Product::update - Erreur : {$e->getMessage()} " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de la modification.",
 			]);
 		}
@@ -286,7 +286,7 @@ class ProductController extends Controller
 			if (!$product) {
 				Log::warning("Product::destroy - Aucune produit trouvé pour l'UID : {$uid}");
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => "Produit non trouvé.",
 				]);
 			}
@@ -295,7 +295,7 @@ class ProductController extends Controller
 			if ($productCount > 0) {
 				Log::warning("Product::destroy - Ce produit est associé à {$productCount} transaction(s).");
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => "Ce produit est associé à {$productCount} transaction(s).",
 				]);
 			}
@@ -311,14 +311,14 @@ class ProductController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Produit supprimé avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();
 			Log::warning("Product::destroy - Erreur : {$e->getMessage()}");
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de la suppression.",
 			]);
 		}

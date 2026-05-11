@@ -38,7 +38,7 @@ class StatusController extends Controller
             // Vérifier si le type existe
             if (!isset($models[$type])) {
                 return response()->json([
-                    'status' => 0,
+                    'status' => false,
                     'message' => "Type invalide.",
                 ]);
             }
@@ -49,7 +49,7 @@ class StatusController extends Controller
             if (!$item) {
                 Log::warning("StatusController - Aucun {$label} trouvé pour UID : {$uid}");
                 return response()->json([
-                    'status' => 0,
+                    'status' => false,
                     'message' => "{$label} non trouvé.",
                 ]);
             }
@@ -57,7 +57,7 @@ class StatusController extends Controller
             if ($type === 'profiles' && $item->id == 1) {
                 Log::warning("StatusController - Tentative désactivation admin UID : {$uid}");
                 return response()->json([
-                    'status' => 0,
+                    'status' => false,
                     'message' => "Le profil administrateur ne peut pas être désactivé.",
                 ]);
             }
@@ -77,13 +77,13 @@ class StatusController extends Controller
                 Session::get('avatar')
             );
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "{$label} " . Str::lower($action) . " avec succès.",
 			]);
         } catch (\Exception $e) {
             Log::warning("StatusController : {$e->getMessage()}");
             return response()->json([
-                'status' => 0,
+                'status' => false,
                 'message' => "Erreur lors du changement de statut.",
             ]);
         }

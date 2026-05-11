@@ -48,11 +48,11 @@
 								</div>
 								<div class="col-md-2 col-12">
 									<label class="fw-bolder text-dark fs-5">PU : <span class="text-danger">*</span></label>
-									<input type="text" id="price" name="price" class="form-control requiredField text-end" placeholder="0" />
+									<input type="text" id="price" name="price" class="form-control requiredField text-end" placeholder="0" oninput="verif_int(this)" />
 								</div>
 								<div class="col-md-1 col-12">
 									<label class="fw-bolder text-dark fs-5">Qté : <span class="text-danger">*</span></label>
-									<input type="text" id="price" name="price" class="form-control requiredField text-center" placeholder="0" />
+									<input type="text" id="price" name="price" class="form-control requiredField text-center" placeholder="0" oninput="verif_int(this)" />
 								</div>
 								<div class="col-md-2 col-12">
 									<label class="fw-bolder text-dark fs-5">Total : <span class="text-danger">*</span></label>
@@ -92,21 +92,25 @@
 @endsection
 
 @section('scripts')
+  	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 	<script src="/assets/js/custom/formrepeater.bundle.js"></script>
 	<script src="/assets/js/custom/flatpickr_fr.js"></script>
+    <script src="/assets/js/custom/select2.js"></script>
     <script>
-        $(document).ready(function() {
-            $(".date_at").flatpickr({
-                locale: "fr",
-                altInput: true,
-                altFormat: "d-m-Y",
-                dateFormat: "Y-m-d",
-    			defaultDate: "today",
-                maxDate: "today",
-            });
-			// Désactiver le bouton de suppression du premier élément
-			$('[data-repeater-delete]').addClass('disabled').css('pointer-events', 'none');
-        });
+		$('.date_at').flatpickr({
+			locale: 'fr',
+			altInput: true,
+			altFormat: 'd-m-Y',
+			dateFormat: 'Y-m-d',
+			defaultDate: 'today',
+			maxDate: 'today',
+		});
+		$('#category_id').select2({
+			placeholder: "Sélectionner",
+			width: '100%',
+		});
+		// Désactiver le bouton de suppression du premier élément
+		$('[data-repeater-delete]').addClass('disabled').css('pointer-events', 'none');
 		$('#kt_docs_repeater_basic').repeater({
 			initEmpty: false,
 
@@ -122,5 +126,33 @@
 				$(this).slideUp(deleteElement);
 			}
 		});
+		$('#type_id').on('change', async function () {
+			const type_id = $(this).val();
+			getCategory(type_id);
+		});
+		const getCategory = async (type_id) => {
+			if (type_id == '') return;
+			const selectCategory = $('#category_id');
+			selectCategory.empty();
+			
+			if (type_id != 0) {
+				selectCategory.append(
+					`<option value="" selected>Sélectionner</option>`
+				);
+				try {
+					const response = await axios.get( '/getCategory/' + type_id);
+					const item = response.data.data || [];
+					if (item.length > 0) {
+						item.map(data => {
+							selectCategory.append(
+								`<option value="${data.id}">${data.libelle}</option>`
+							);
+						});
+					}
+				} catch (e) {
+					console.error(e);
+				}
+			}
+		}
     </script>
 @endsection

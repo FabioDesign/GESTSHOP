@@ -30,7 +30,7 @@ class PasswordController extends Controller
         if ($validator->fails()) {
             Log::warning("Forgotpass::store - Validator : {$validator->errors()->first()} - {$request->email}");
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => $validator->errors()->first(),
 			]);
         }
@@ -73,13 +73,13 @@ class PasswordController extends Controller
                 $avatar
             );
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Mot de passe envoyé par mail avec succès.",
 			]);
 		} else {
             Log::warning("Forgotpass::store - Adresse e-mail non trouvée : {$request->email}");
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Adresse e-mail non trouvée.",
 			]);
         }
@@ -130,7 +130,7 @@ class PasswordController extends Controller
 		if ($validator->fails()) {
 			Log::warning("Password::update - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => $validator->errors()->first(),
 			]);
 		}
@@ -138,7 +138,7 @@ class PasswordController extends Controller
         if (!Hash::check($request->oldpass, Auth::user()->password)) {
             Log::warning("Password::update - Ancien mot de passe incorrect pour l'utilisateur ID : " . Auth::user()->id);
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Ancien mot de passe incorrect.",
 			]);
         }
@@ -165,7 +165,7 @@ class PasswordController extends Controller
             DB::rollBack(); // Annuler la transaction en cas d'erreur
             Log::warning("Password::update - Erreur : {$e->getMessage()}" . json_encode($request->all()));
             return response()->json([
-                'status' => 0,
+                'status' => false,
                 'message' => "Erreur lors de la modification.",
             ]);
         }

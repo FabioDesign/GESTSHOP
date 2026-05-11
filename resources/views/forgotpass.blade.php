@@ -111,7 +111,7 @@
 		<script src="/assets/js/scripts.bundle.js"></script>
 		<!--end::Global Javascript Bundle-->
 		<!--begin::Custom Javascript(used for this page only)-->
-		<script src="/assets/js/custom/authentication/reset-password/reset-password.js"></script>
+		<script src="/assets/js/custom/reset-password.js"></script>
 		<script src="/assets/js/custom/icheck.js"></script>
 		<script src="/assets/js/custom.js?v20126.03.29.02.45"></script>
 		<!--end::Custom Javascript-->

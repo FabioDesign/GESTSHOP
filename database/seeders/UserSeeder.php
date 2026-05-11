@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
                 'email' => 'fabio225@yopmail.com',
                 'password' => Hash::make('Azerty@123'),
                 'password_at' => now(),
-                'status' => 1,
+                'status' => true,
                 'created_by' => 1,
                 'profile_id' => 1,
             ]

@@ -54,6 +54,8 @@ Route::middleware(['auth'])->group(function () {
   Route::get('/dashboard', [DashboardController::class, 'index']);
   // Route pour Gestion des stocks
   Route::get('/geststock', [ProductController::class, 'geststock']);
+  // Route pour liste des catégories
+  Route::get('/getCategory/{type}', [CategoryController::class, 'getCategory']);
   // Route pour les utilisateurs
   Route::controller(UserController::class)->group(function () {
     Route::get('/account', 'account');

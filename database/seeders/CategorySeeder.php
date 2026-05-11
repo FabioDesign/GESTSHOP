@@ -16,21 +16,21 @@ class CategorySeeder extends Seeder
         Category::firstOrCreate(
             ['libelle' => "Ventes"],
             [
-                'status' => 1,
+                'status' => true,
                 'type_id' => 1,
             ]
         );
         Category::firstOrCreate(
             ['libelle' => "Dépenses"],
             [
-                'status' => 1,
+                'status' => true,
                 'type_id' => 2,
             ]
         );
         Category::firstOrCreate(
             ['libelle' => "Approvisionnement"],
             [
-                'status' => 1,
+                'status' => true,
                 'type_id' => 1,
             ]
         );

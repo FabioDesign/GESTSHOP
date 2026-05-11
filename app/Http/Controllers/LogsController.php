@@ -23,11 +23,23 @@ class LogsController extends Controller
 	}
     //Liste de Pistes d'audit
 	public function getLogs() {
-		//Requete Read-
-		$query = DB::select('CALL sp_get_logs()');
-		return response()->json([
-			'status' => true,
-			'data' => $query,
-		]);
+        if (!Auth::check()) {
+            return 'x';
+        }
+		try {
+			//Requete Read
+			$query = DB::select('CALL sp_get_logs()');
+			return response()->json([
+				'status' => true,
+				'data' => $query,
+			]);
+		} catch (\Exception $e) {
+			DB::rollBack();
+			Log::warning("Category::getCategory - Erreur : {$e->getMessage()}");
+			return response()->json([
+				'status' => false,
+				'message' => "Erreur de chargement des données.",
+			]);
+		}
 	}
 }

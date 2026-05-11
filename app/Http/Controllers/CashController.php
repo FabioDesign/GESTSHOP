@@ -114,7 +114,7 @@ class CashController extends Controller
 		if ($validator->fails()) {
 			Log::warning("Cash::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => $validator->errors()->first(),
 			]);
 		}
@@ -139,14 +139,14 @@ class CashController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Caisse enregistré avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();
 			Log::warning("Cash::store - Erreur : {$e->getMessage()} " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de l'enregistrement.",
 			]);
 		}
@@ -209,7 +209,7 @@ class CashController extends Controller
 		if ($validator->fails()) {
 			Log::warning("Cash::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => $validator->errors()->first(),
 			]);
 		}
@@ -218,7 +218,7 @@ class CashController extends Controller
 		if (!$query) {
 			Log::warning("Cash::update - Aucune produit trouvé pour l'UID : {$uid}");
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Caisse non trouvé.",
 			]);
 		}
@@ -243,7 +243,7 @@ class CashController extends Controller
 			if ($validator->fails()) {
 				Log::warning("Cash::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => $validator->errors()->first(),
 				]);
 			}
@@ -262,14 +262,14 @@ class CashController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Caisse modifié avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack(); // Annuler la transaction en cas d'erreur
 			Log::warning("Cash::update - Erreur : {$e->getMessage()} " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de la modification.",
 			]);
 		}
@@ -286,7 +286,7 @@ class CashController extends Controller
 			if (!$product) {
 				Log::warning("Cash::destroy - Aucune produit trouvé pour l'UID : {$uid}");
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => "Caisse non trouvé.",
 				]);
 			}
@@ -295,7 +295,7 @@ class CashController extends Controller
 			if ($productCount > 0) {
 				Log::warning("Cash::destroy - Ce produit est associé à {$productCount} transaction(s).");
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => "Ce produit est associé à {$productCount} transaction(s).",
 				]);
 			}
@@ -311,14 +311,14 @@ class CashController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Caisse supprimé avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();
 			Log::warning("Cash::destroy - Erreur : {$e->getMessage()}");
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de la suppression.",
 			]);
 		}

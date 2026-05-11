@@ -115,7 +115,7 @@ class ProfileController extends Controller
 		if ($validator->fails()) {
 			Log::warning("Profile::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => $validator->errors()->first(),
 			]);
 		}
@@ -148,14 +148,14 @@ class ProfileController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Profil enregistré avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack(); // Annuler la transaction en cas d'erreur
 			Log::warning("Profile::store - Erreur : {$e->getMessage()} " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de l'enregistrement.",
 			]);
 		}
@@ -205,7 +205,7 @@ class ProfileController extends Controller
 			if (!$profile) {
 				Log::warning("Profile::show - Aucun profil trouvé pour l'UID : {$uid}");
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => "Profil non trouvé.",
 				]);
 			}
@@ -230,7 +230,7 @@ class ProfileController extends Controller
 			if ($validator->fails()) {
 				Log::warning("Profile::update - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => $validator->errors()->first(),
 				]);
 			}
@@ -264,14 +264,14 @@ class ProfileController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Profil modifié avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack(); // Annuler la transaction en cas d'erreur
 			Log::warning("Profile::update - Erreur : {$e->getMessage()} " . json_encode($request->all()));
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de la modification.",
 			]);
 		}
@@ -288,7 +288,7 @@ class ProfileController extends Controller
 			if (!$query) {
 				Log::warning("Profile::destroy - Aucun profil trouvé pour l'UID : {$uid}");
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => "Profil non trouvé.",
 				]);
 			}
@@ -296,7 +296,7 @@ class ProfileController extends Controller
 			if ($query->id == 1) {
 				Log::warning("Profile::destroy - Profil administrateur pour l'UID : {$uid}");
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => "Le profil administrateur ne peut pas être supprimé.",
 				]);
 			}
@@ -305,7 +305,7 @@ class ProfileController extends Controller
 			if ($userCount > 0) {
 				Log::warning("Profile::destroy - Ce profil est associé à {$userCount} utilisateur(s).");
 				return response()->json([
-					'status' => 0,
+					'status' => false,
 					'message' => "Ce profil est associé à {$userCount} utilisateur(s).",
 				]);
 			}
@@ -323,14 +323,14 @@ class ProfileController extends Controller
 				Session::get('avatar')
 			);
 			return response()->json([
-				'status' => 1,
+				'status' => true,
 				'message' => "Profil supprimé avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();
 			Log::warning("Profile::destroy - Erreur : {$e->getMessage()}");
 			return response()->json([
-				'status' => 0,
+				'status' => false,
 				'message' => "Erreur lors de la suppression.",
 			]);
 		}

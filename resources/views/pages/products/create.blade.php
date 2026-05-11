@@ -47,17 +47,17 @@
                 </div>
                 <div class="col-md-6 col-12">
                     <label class="fw-bolder text-dark fs-5">Seuil : <span class="text-danger">*</span></label>
-                    <input type="text" name="seuil" class="form-control requiredField" placeholder="Saisir le seuil" onKeyUp="verif_int(this)" />
+                    <input type="text" name="seuil" class="form-control requiredField" placeholder="Saisir le seuil" oninput="verif_int(this)" />
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="col-md-6 col-12">
                     <label class="fw-bolder text-dark fs-5">Prix d'achat : <span class="text-danger">*</span></label>
-                    <input type="text" name="prix_achat" class="form-control requiredField" placeholder="Saisir le prix d'achat" onKeyUp="verif_int(this)" />
+                    <input type="text" name="prix_achat" class="form-control requiredField" placeholder="Saisir le prix d'achat" oninput="verif_int(this)" />
                 </div>
                 <div class="col-md-6 col-12">
                     <label class="fw-bolder text-dark fs-5">Prix de vente : <span class="text-danger">*</span></label>
-                    <input type="text" name="prix_vente" class="form-control requiredField" placeholder="Saisir le prix de vente" onKeyUp="verif_int(this)" />
+                    <input type="text" name="prix_vente" class="form-control requiredField" placeholder="Saisir le prix de vente" oninput="verif_int(this)" />
                 </div>
             </div>
             <div class="row mb-2">
