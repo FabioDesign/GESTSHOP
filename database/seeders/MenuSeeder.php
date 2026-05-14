@@ -33,7 +33,7 @@ class MenuSeeder extends Seeder
             ['libelle' => "Gestion de stock"],
             [
                 'icone' => "ki-abstract-26",
-                'target' => "geststock",
+                'target' => "gestStock",
                 'position' => 3,
             ]
         );

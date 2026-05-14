@@ -19,8 +19,8 @@ return new class extends Migration
             $table->decimal('prix_vente', 10, 0)->default('0');
             $table->decimal('seuil', 5, 0)->default('0');
             $table->decimal('stock', 5, 0)->default('0');
-            $table->text('photo');
-            $table->text('description');
+            $table->text('photo')->nullable();
+            $table->text('description')->nullable();
             $table->tinyInteger('status')->default('1');
             $table->timestamps();
             $table->softDeletes();

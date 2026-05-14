@@ -10,7 +10,7 @@
         <!--begin::Toolbar-->
         <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
           <!--begin::Select-->
-				  <select id="tableLength" class="form-select form-select-sm form-select-solid w-80px" data-control="select2" data-hide-search="true">
+				  <select id="tableLength" class="form-select w-80px" data-control="select2" data-hide-search="true">
             <option value="" disabled>Afficher</option>
             <option value="10" selected="selected">10</option>
             <option value="25">25</option>
@@ -30,7 +30,7 @@
             <span class="path1"></span>
             <span class="path2"></span>
           </i>
-          <input type="text" id="tableSearch" class="form-control form-control-solid form-select-sm w-200px ps-9" placeholder="Rechercher..." />
+          <input type="text" id="tableSearch" class="form-control w-200px ps-9" placeholder="Rechercher..." />
         </div>
         <!--end::Search-->
       </div>

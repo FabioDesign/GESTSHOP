@@ -324,7 +324,7 @@ class ProductController extends Controller
 		}
 	}
     //Liste des produits
-	public function geststock()
+	public function gestStock()
 	{
         if (!Auth::check()) {
             return redirect('/');
@@ -332,7 +332,7 @@ class ProductController extends Controller
 		//Title
 		$title = 'Gestion de stock des produits';
 		//Menu
-		$currentMenu = 'geststock';
+		$currentMenu = 'gestStock';
 		// Modal
 		$addmodal = '';
 		//Requete Read
@@ -348,5 +348,27 @@ class ProductController extends Controller
 			Session::get('avatar')
 		);
 		return view('pages.products.geststock', compact('title', 'currentMenu', 'addmodal', 'query'));
+	}
+    //Liste des produits
+	public function getProduct($id)
+	{
+        if (!Auth::check()) {
+            return 'x';
+        }
+		try {
+			//Requete Read
+			$product = Product::find($id);
+			return response()->json([
+				'status' => true,
+				'data' => $product,
+			]);
+		} catch (\Exception $e) {
+			DB::rollBack();
+			Log::warning("Product::getProduct - Erreur : {$e->getMessage()}");
+			return response()->json([
+				'status' => false,
+				'message' => "Erreur de chargement des données.",
+			]);
+		}
 	}
 }

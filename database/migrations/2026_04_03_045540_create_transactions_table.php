@@ -16,8 +16,6 @@ return new class extends Migration
             $table->decimal('price', 10, 0);
             $table->decimal('quantity', 5, 0);
             $table->timestamps();
-            $table->foreignId('created_by')->nullable();
-            $table->foreignId('updated_by')->nullable();
             $table->integer('cash_id');
             $table->integer('product_id');
             $table->integer('category_id');

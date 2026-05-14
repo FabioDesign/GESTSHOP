@@ -43,23 +43,6 @@ class User extends Authenticatable
         'password',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'birthday_at' => 'date',
-        'arrival_at' => 'date',
-        'login_at' => 'datetime',
-        'blocked_at' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
-        'password_at' => 'datetime',
-        'activated_at' => 'datetime',
-    ];
-
     // Génération de UUID unique
     protected static function boot()
     {

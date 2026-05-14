@@ -9,7 +9,7 @@
             <div class="row mb-5">
                 <div class="col-md-4 col-12">
                     <label class="fw-bolder text-dark fs-5">Genre : <span class="text-danger">*</span></label>
-                    <select name="gender" class="form-control requiredField">
+                    <select name="gender" class="form-select requiredField">
 						<option value="" selected>Sélectionner</option>
 						@foreach($gender as $key => $sex)
 							<option value="{{ $key }}">{{ $sex }}</option>
@@ -36,7 +36,7 @@
                 </div>
                 <div class="col-md-4 col-12">
                     <label class="fw-bolder text-dark fs-5">Profil : <span class="text-danger">*</span></label>
-                    <select name="profile_id" class="form-control requiredField">
+                    <select name="profile_id" class="form-select requiredField">
 						<option value="" selected>Sélectionner</option>
 						@foreach($profile as $data)
 							<option value="{{ $data->id }}">{{ $data->libelle }}</option>

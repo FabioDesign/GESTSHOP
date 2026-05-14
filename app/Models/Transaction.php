@@ -11,10 +11,10 @@ class Transaction extends Model
 
     protected $guarded = [];
 
-    // Relation avec la Sous categorie
-    public function subcategory()
+    // Relation avec la categorie
+    public function category()
     {
-        return $this->belongsTo(Subcategory::class, 'subcategory_id');
+        return $this->belongsTo(Category::class, 'category_id');
     }
     // Relation avec le produit
     public function product()

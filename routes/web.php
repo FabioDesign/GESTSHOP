@@ -43,19 +43,22 @@ Route::controller(PasswordController::class)->group(function () {
 // Routes protégées par authentification
 Route::middleware(['auth'])->group(function () {
   Route::resources([
-    'category' => CategoryController::class,
     'cashs' => CashController::class,
-    'products' => ProductController::class,
+    'category' => CategoryController::class,
     'menus' => MenuController::class,
+    'products' => ProductController::class,
     'profiles' => ProfileController::class,
     'users' => UserController::class,
   ]);
   // Route pour Tableau de bord
   Route::get('/dashboard', [DashboardController::class, 'index']);
-  // Route pour Gestion des stocks
-  Route::get('/geststock', [ProductController::class, 'geststock']);
+  // Routes pour les produits
+  Route::controller(ProductController::class)->group(function () {
+    Route::get('/gestStock', 'gestStock');
+    Route::get('/getProduct/{id}', 'getProduct');
+  });
   // Route pour liste des catégories
-  Route::get('/getCategory/{type}', [CategoryController::class, 'getCategory']);
+  Route::get('/getCategory/{id}', [CategoryController::class, 'getCategory']);
   // Route pour les utilisateurs
   Route::controller(UserController::class)->group(function () {
     Route::get('/account', 'account');

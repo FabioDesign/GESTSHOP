@@ -14,24 +14,31 @@ class CategorySeeder extends Seeder
      */
     public function run(){
         Category::firstOrCreate(
+            ['libelle' => "Achats"],
+            [
+                'status' => 1,
+                'type_id' => 2,
+            ]
+        );
+        Category::firstOrCreate(
             ['libelle' => "Ventes"],
             [
-                'status' => true,
+                'status' => 1,
+                'type_id' => 1,
+            ]
+        );
+        Category::firstOrCreate(
+            ['libelle' => "Approvisionnement"],
+            [
+                'status' => 1,
                 'type_id' => 1,
             ]
         );
         Category::firstOrCreate(
             ['libelle' => "Dépenses"],
             [
-                'status' => true,
+                'status' => 1,
                 'type_id' => 2,
-            ]
-        );
-        Category::firstOrCreate(
-            ['libelle' => "Approvisionnement"],
-            [
-                'status' => true,
-                'type_id' => 1,
             ]
         );
     }

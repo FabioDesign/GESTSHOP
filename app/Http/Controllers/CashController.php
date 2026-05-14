@@ -7,7 +7,7 @@ use Myhelper;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Models\{Cash, Category, Transaction};
+use App\Models\{Cash, Category, Product, Transaction};
 use Illuminate\Support\Facades\{Auth, DB, Log, Validator};
 
 class CashController extends Controller
@@ -76,39 +76,34 @@ class CashController extends Controller
 	//Add produit
 	public function store(request $request)
 	{
+		// dd($request->all());
         if (!Auth::check()) {
             return 'x';
         }
 		// Validator
 		$validator = Validator::make($request->all(), [
-			'libelle' => [
+			'date_at' => [
 				'required',
-				Rule::unique('cashs')->where(function ($query) {
+				'date',
+				'date_format:Y-m-d',
+				Rule::unique('cashes')->where(function ($query) {
 					return $query->whereNull('deleted_at');
 				}),
 			],
-			'description' => 'required',
-			'seuil' => 'required|integer|min:1',
-			'prix_achat' => 'required|integer|min:100|lte:prix_vente',
-			'prix_vente' => 'required|integer|min:100',
-			'photo' => 'required|file|mimes:png,jpg,jpeg,svg,webp|max:2048',
+			'cash_in' => 'required|integer',
+			'cash_out' => 'required|integer',
+			'kt_docs_repeater_basic' => 'required|array',
 		], [
-			'libelle.required' => "Le libellé est obligatoire.",
-			'libelle.unique' => "Le libellé existe déjà dans la base de données.",
-			'description.required' => "La description est obligatoire.",
-			'seuil.required'  => "Le seuil est obligatoire.",
-			'seuil.integer'   => "Le seuil doit être un entier.",
-			'seuil.min'       => "Le seuil doit être supérieur à 0.",
-			'prix_achat.required'  => "Le prix d'achat est obligatoire.",
-			'prix_achat.integer'   => "Le prix d'achat doit être un entier.",
-			'prix_achat.min'       => "Le prix d'achat doit être supérieur à 100Fr.",
-			'prix_achat.lte'       => "Le prix d'achat doit être inférieur ou égal au prix de vente.",
-			'prix_vente.required'  => "Le prix de vente est obligatoire.",
-			'prix_vente.integer'   => "Le prix de vente doit être un entier.",
-			'prix_vente.min'       => "Le prix de vente doit être supérieur à 100Fr.",
-			'photo.file' => "La photo doit être un fichier.",
-			'photo.mimes' => "La photo doit être un fichier de type : png, jpg, jpeg, svg ou webp.",
-			'photo.max' => "La photo ne doit pas être supérieur à 2Mo.",
+			'date_at.required' => "La date est obligatoire.",
+			'date_at.date' => "La date est invalide.",
+			'date_at.date_format' => "Le format de la date est incorrect.",
+			'date_at.unique' => "La date existe déjà dans la base de données.",
+			'cash_in.required'  => "Le montant des entrées est obligatoire.",
+			'cash_in.integer'   => "Le montant des entrées doit être un entier.",
+			'cash_out.required'  => "Le montant des sorties est obligatoire.",
+			'cash_out.integer'   => "Le montant des sorties doit être un entier.",
+			'kt_docs_repeater_basic.required'  => "La ligne des produits est obligatoire.",
+			'kt_docs_repeater_basic.array'   => "Format de la ligne des produits invalide.",
 		]);
 		// Error field
 		if ($validator->fails()) {
@@ -118,29 +113,39 @@ class CashController extends Controller
 				'message' => $validator->errors()->first(),
 			]);
 		}
-		$photo = $request->file('photo')->store('cashs', 'public');
 		$set = [
-			'seuil' => $request->seuil,
-			'libelle' => $request->libelle,
-			'prix_achat' => $request->prix_achat,
-			'prix_vente' => $request->prix_vente,
-			'description' => $request->description,
-			'photo' => $photo,
+			'date_at' => $request->date_at,
+			'cash_in' => $request->cash_in,
+			'cash_out' => $request->cash_out,
 		];
 		DB::beginTransaction();
 		try {
-			Cash::create($set);
+			$cash = Cash::create($set);
 			DB::commit();
+			// Enregistrer les produits des categories
+			if ($request->has('kt_docs_repeater_basic') && is_array($request->kt_docs_repeater_basic)) {
+				foreach ($request->kt_docs_repeater_basic as $data) {
+					// Enregistrer le produit
+					Transaction::firstOrCreate([
+						'cash_id' => $cash->id,
+						'price' => $data['price'],
+						'quantity' => $data['quantity'],
+						'product_id' => $data['product_id'],
+						'category_id' => $data['category_id'],
+					]);
+				}
+			}
+			$date = date('d-m-Y', strtotime($request->date_at));
 			Myhelper::logs(
 				Session::get('username'),
 				Session::get('profil'),
-				"Caisse: {$request->libelle}",
+				"Caisse: {$date}",
 				'Ajouter',
 				Session::get('avatar')
 			);
 			return response()->json([
 				'status' => true,
-				'message' => "Caisse enregistré avec succès.",
+				'message' => "Caisse enregistréeavec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();
@@ -170,7 +175,14 @@ class CashController extends Controller
 		// Modal
 		$addmodal = '<a href="/cashs" class="btn btn-sm fw-bold btn-danger">Retour</a>
 		<a href="#" class="btn btn-sm fw-bold btn-success submitForm">Modifier</a>';
-		return view('pages.cashs.edit', compact('title', 'currentMenu', 'addmodal', 'query'));
+		//Requete Read
+		$category = Category::where('status', 1)->get();
+		$product = Product::where('status', 1)
+		->orderBy('category_id')
+		->orderBy('libelle')
+		->get();
+		$transactions = Transaction::where('cash_id', $query->id)->get();
+		return view('pages.cashs.edit', compact('title', 'currentMenu', 'addmodal', 'query', 'category', 'product', 'transactions'));
 	}
 	// Mettre à jour une caisse
 	public function update(Request $request, $uid)
@@ -322,31 +334,5 @@ class CashController extends Controller
 				'message' => "Erreur lors de la suppression.",
 			]);
 		}
-	}
-    //Liste de la caisse
-	public function geststock()
-	{
-        if (!Auth::check()) {
-            return redirect('/');
-        }
-		//Title
-		$title = 'Gestion de stock de la caisse';
-		//Menu
-		$currentMenu = 'geststock';
-		// Modal
-		$addmodal = '';
-		//Requete Read
-		$query = Cash::where('category_id', 0)
-		->orderBy('status')
-		->orderBy('stock')
-		->get();
-		Myhelper::logs(
-			Session::get('username'),
-			Session::get('profil'),
-			"Caisse: Gestion de stock",
-			'Consulter',
-			Session::get('avatar')
-		);
-		return view('pages.cashs.geststock', compact('title', 'currentMenu', 'addmodal', 'query'));
 	}
 }

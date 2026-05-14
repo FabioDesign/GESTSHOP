@@ -49,7 +49,7 @@
 			<div class="row mb-5">
                 <div class="col-md-4 col-12">
                     <label class="fw-bolder text-dark fs-5 code">Genre : <span class="text-danger">*</span></label>
-                    <select name="gender" class="form-control requiredField">
+                    <select name="gender" class="form-select requiredField">
 						<option value="" selected>Sélectionner</option>
 						@foreach($gender as $key => $sex)
 							<option value="{{ $key }}" @php echo $key == $query->gender ? 'selected':'' @endphp>{{ $sex }}</option>
@@ -76,7 +76,7 @@
 				</div>
 				<div class="col-md-4 col-12">
 					<label class="fw-bolder text-dark fs-5">Profil : <span class="text-danger">*</span></label>
-					<select id="profile_id" name="profile_id" class="form-control" disabled>
+					<select id="profile_id" name="profile_id" class="form-select" disabled>
 						<option value="" selected>Sélectionner</option>
 						@foreach($profile as $data)
 							<option value="{{ $data->id }}" @php echo $data->id == $query->profile_id ? 'selected':'' @endphp>{{ $data->libelle }}</option>

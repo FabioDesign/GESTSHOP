@@ -72,7 +72,9 @@ class CategoryController extends Controller
 		$addmodal = '<a href="/category" class="btn btn-sm fw-bold btn-danger">Retour</a>
 		<a href="#" class="btn btn-sm fw-bold btn-success submitForm">Ajouter</a>';
 		//Requete Read
-		$list = Category::where('status', 1)->get();
+		$list = Category::where('status', 1)
+		->where('id', '>', 2)
+		->get();
 		return view('pages.category.create', compact('title', 'currentMenu', 'addmodal', 'list'));
 	}
 	//Add categories
@@ -272,22 +274,26 @@ class CategoryController extends Controller
 		}
 	}
     //Liste des produits
-	public function getCategory($type)
+	public function getCategory($id)
 	{
         if (!Auth::check()) {
             return 'x';
         }
 		try {
 			//Requete Read
-			$query = Product::select('id', 'libelle', 'category_id')
-            ->where('category_id', $type)
+			$category = Category::find($id);
+			//Requete Read
+			$product = Product::select('id', 'libelle')
+            ->where('status', 1)
+            ->where('category_id', $id)
 			->orWhere('category_id', 0)
-			->orderByDesc('category_id')
+			->orderBy('category_id')
 			->orderBy('libelle')
 			->get();
 			return response()->json([
 				'status' => true,
-				'data' => $query,
+				'data' => $product,
+				'type' => $category->type_id,
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();

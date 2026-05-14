@@ -11,7 +11,7 @@ return new class extends Migration
             DROP PROCEDURE IF EXISTS sp_get_logs;
             CREATE PROCEDURE sp_get_logs()
             BEGIN
-                SELECT username, profil, libelle, color, created_at
+                SELECT username, profil, action, libelle, color, avatar, created_at
                 FROM logs
                 ORDER BY created_at DESC;
             END
