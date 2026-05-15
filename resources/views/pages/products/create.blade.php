@@ -5,6 +5,7 @@
     <div class="card-body py-4">
         <form class="formField">
             <input type="hidden" id="rootForm" value="products">
+            <span class="msgError" style="display: none;"></span>
 			<!--begin::Input group-->
 			<div class="row mb-6">
 				<!--begin::Col-->
@@ -66,7 +67,6 @@
                     <textarea name="description" class="form-control requiredField" placeholder="Saisir la description"></textarea>
                 </div>
             </div>
-            <span class="msgError" style="display: none;"></span>
         </form>
     </div>
 </div>

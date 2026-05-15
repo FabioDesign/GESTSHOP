@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('cash_id');
             $table->integer('product_id');
             $table->integer('category_id');
+            $table->unique(['cash_id', 'product_id', 'category_id']);
         });
     }
 

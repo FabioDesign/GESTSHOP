@@ -17,13 +17,14 @@
             <input type="text" name="description" class="form-control requiredField" placeholder="Saisir la description" />
           </div>
         </div>
-        <div class="row form-group fv-row mt-10 mb-2">
+        <span class="msgError" style="display: none;"></span>
+        <div class="row form-group mt-10 mb-2">
           <label class="col-md-12 col-12 col-form-label text-lg-right fw-bolder text-dark fs-5">
             <span class="me-3">Gestion des permissions</span>
           </label>
         </div>
         @foreach($menusWithActions as $menu)
-          <div class="row form-group fv-row mb-2">
+          <div class="row form-group mb-2">
             <label class="col-md-2 col-12 col-form-label text-lg-right fw-bolder text-dark fs-5">{{ $menu->libelle }}</label>
             <div class="col-md-10 col-12 checkbox-inline">
                 @foreach($menu->actions as $action)
@@ -33,7 +34,6 @@
             </div>
           </div>
         @endforeach
-        <span class="msgError" style="display: none;"></span>
       </form>
     </div>
     <!--end::Card body-->

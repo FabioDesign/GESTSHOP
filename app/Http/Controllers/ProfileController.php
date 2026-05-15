@@ -241,11 +241,11 @@ class ProfileController extends Controller
 			DB::beginTransaction(); // Démarrer une transaction
 			// Mettre à jour le profil
 			$profile->update($set);
-			// Supprimer les anciennes permissions
-			Permission::where('profile_id', $profile->id)->delete();
 			// Ajouter les nouvelles permissions
 			if ($request->has('permissions') && is_array($request->permissions)) {
-				foreach ($request->permissions as $permissionValue) {
+				// Supprimer les anciennes permissions
+				Permission::where('profile_id', $profile->id)->delete();
+				foreach ($request->permissions as $permissionValue) :
 					$permission = Str::of($permissionValue)->explode('|');
 					// Enregistrer la permission
 					Permission::firstOrCreate([
@@ -253,7 +253,7 @@ class ProfileController extends Controller
 						'action_id' => $permission[1],
 						'profile_id' => $profile->id,
 					]);
-				}
+				endforeach;
 			}
 			DB::commit(); // Valider la transaction
 			Myhelper::logs(

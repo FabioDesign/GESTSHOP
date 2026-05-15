@@ -24,11 +24,11 @@
             $i = 1;
             $href_edit = $class_status = $class_delete = '';
             $color_edit = $color_status = $color_delete = 'text-muted';
-            if (in_array(4, $actionIds)) {
+            if (in_array(5, $actionIds)) {
               $class_status = "status";
               $color_status = 'text-info';
             }
-            if (in_array(5, $actionIds)) {
+            if (in_array(4, $actionIds)) {
               $class_delete = "status";
               $color_delete = 'text-danger';
             }

@@ -154,7 +154,9 @@ class CategoryController extends Controller
 		$addmodal = '<a href="/category" class="btn btn-sm fw-bold btn-danger">Retour</a>
 		<a href="#" class="btn btn-sm fw-bold btn-success submitForm">Modifier</a>';
 		//Requete Read
-		$list = Category::where('status', 1)->get();
+		$list = Category::where('status', 1)
+		->where('id', '>', 2)
+		->get();
 		return view('pages.category.edit', compact('title', 'currentMenu', 'addmodal', 'query', 'list'));
 	}
 	// Mettre à jour une categories
@@ -283,13 +285,13 @@ class CategoryController extends Controller
 			//Requete Read
 			$category = Category::find($id);
 			//Requete Read
-			$product = Product::select('id', 'libelle')
-            ->where('status', 1)
-            ->where('category_id', $id)
-			->orWhere('category_id', 0)
-			->orderBy('category_id')
-			->orderBy('libelle')
-			->get();
+			$query = Product::select('id', 'libelle')
+            ->where('status', 1);
+			if ($id > 2)
+				$query->where('category_id', $id);
+			else
+				$query->where('category_id', 0);
+			$product = $query->orderBy('libelle')->get();
 			return response()->json([
 				'status' => true,
 				'data' => $product,

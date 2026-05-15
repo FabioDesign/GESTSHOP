@@ -6,6 +6,7 @@
         <form class="formField">
             @method('PUT')
             <input type="hidden" id="rootForm" value="products/{{ $query->uid }}">
+            <span class="msgError" style="display: none;"></span>
 			<!--begin::Input group-->
 			<div class="row mb-6">
 				<!--begin::Col-->
@@ -67,7 +68,6 @@
                     <textarea name="description" class="form-control requiredField" placeholder="Saisir la description">{{ old('description', $query->description) }}</textarea>
                 </div>
             </div>
-            <span class="msgError" style="display: none;"></span>
         </form>
     </div>
 </div>

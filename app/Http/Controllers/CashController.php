@@ -52,9 +52,15 @@ class CashController extends Controller
 			Log::warning("Cash::show - Aucune caisse trouvé pour l'UID : {$uid}");
 			return redirect('/cashs');
 		}
+		//Modal
+		$actionIds = Myhelper::actions(Auth::user()->profile_id, 2);
+		$valid = (($query->status == 0) && (in_array(6, $actionIds))) ? '<a href="#" data-url="/cashs/status/' . $uid . '" data-type="PATCH" data-bs-toggle="tooltip" data-bs-placement="top" title="Transmettre la caisse" class="btn btn-sm fw-bold btn-primary status">Transmettre</a>':'';
+		if (!$valid) $valid = (($query->status <= 1) && (in_array(7, $actionIds))) ? '<a href="#" data-url="/cashs/status/' . $uid . '" data-type="PATCH" data-bs-toggle="tooltip" data-bs-placement="top" title="Valider la caisse" class="btn btn-sm fw-bold btn-success status">Valider</a>':'';
+		$delete = (($query->status <= 1) && (in_array(8, $actionIds))) ? '<a href="#" data-url="/cashs/status/' . $uid . '" data-type="PATCH" class="btn btn-sm fw-bold btn-danger btn-rjt">Rejeter</a>':'';
 		// Modal
-		$addmodal = '<a href="/cashs" class="btn btn-sm fw-bold btn-danger">Retour</a>';
-		return view('pages.cashs.show', compact('title', 'currentMenu', 'addmodal', 'query'));
+		$addmodal = '<a href="/cashs" class="btn btn-sm fw-bold btn-danger">Retour</a>' . $valid . $delete;
+		$transactions = Transaction::where('cash_id', $query->id)->get();
+		return view('pages.cashs.show', compact('title', 'currentMenu', 'addmodal', 'query', 'transactions'));
 	}
 	//Add produit
 	public function create()
@@ -76,7 +82,6 @@ class CashController extends Controller
 	//Add produit
 	public function store(request $request)
 	{
-		// dd($request->all());
         if (!Auth::check()) {
             return 'x';
         }
@@ -145,7 +150,7 @@ class CashController extends Controller
 			);
 			return response()->json([
 				'status' => true,
-				'message' => "Caisse enregistréeavec succès.",
+				'message' => "Caisse enregistrée avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack();
@@ -187,35 +192,34 @@ class CashController extends Controller
 	// Mettre à jour une caisse
 	public function update(Request $request, $uid)
 	{
+		// dd($request->all());
         if (!Auth::check()) {
             return 'x';
         }
 		// Validator
 		$validator = Validator::make($request->all(), [
-			'libelle' => [
+			'date_at' => [
 				'required',
-				Rule::unique('cashs')->where(function ($query) use ($uid) {
+				'date',
+				'date_format:Y-m-d',
+				Rule::unique('cashes')->where(function ($query) use ($uid) {
 					return $query->where('uid', '!=', $uid)->whereNull('deleted_at');
 				}),
 			],
-			'description' => 'required',
-			'seuil' => 'required|integer|min:1',
-			'prix_achat' => 'required|integer|min:100|lte:prix_vente',
-			'prix_vente' => 'required|integer|min:100',
+			'cash_in' => 'required|integer',
+			'cash_out' => 'required|integer',
+			'kt_docs_repeater_basic' => 'required|array',
 		], [
-			'libelle.required' => "Le libellé est obligatoire.",
-			'libelle.unique' => "Le libellé existe déjà dans la base de données.",
-			'description.required' => "La description est obligatoire.",
-			'seuil.required'  => "Le seuil est obligatoire.",
-			'seuil.integer'   => "Le seuil doit être un entier.",
-			'seuil.min'       => "Le seuil doit être supérieur à 0.",
-			'prix_achat.required'  => "Le prix d'achat est obligatoire.",
-			'prix_achat.integer'   => "Le prix d'achat doit être un entier.",
-			'prix_achat.min'       => "Le prix d'achat doit être supérieur à 100Fr.",
-			'prix_achat.lte'       => "Le prix d'achat doit être inférieur ou égal au prix de vente.",
-			'prix_vente.required'  => "Le prix de vente est obligatoire.",
-			'prix_vente.integer'   => "Le prix de vente doit être un entier.",
-			'prix_vente.min'       => "Le prix de vente doit être supérieur à 100Fr.",
+			'date_at.required' => "La date est obligatoire.",
+			'date_at.date' => "La date est invalide.",
+			'date_at.date_format' => "Le format de la date est incorrect.",
+			'date_at.unique' => "La date existe déjà dans la base de données.",
+			'cash_in.required'  => "Le montant des entrées est obligatoire.",
+			'cash_in.integer'   => "Le montant des entrées doit être un entier.",
+			'cash_out.required'  => "Le montant des sorties est obligatoire.",
+			'cash_out.integer'   => "Le montant des sorties doit être un entier.",
+			'kt_docs_repeater_basic.required'  => "La ligne des produits est obligatoire.",
+			'kt_docs_repeater_basic.array'   => "Format de la ligne des produits invalide.",
 		]);
 		// Error field
 		if ($validator->fails()) {
@@ -225,57 +229,51 @@ class CashController extends Controller
 				'message' => $validator->errors()->first(),
 			]);
 		}
-		// Vérifier si le produit existe
+		// Vérifier si la caisse existe
 		$query = Cash::where('uid', $uid)->first();
 		if (!$query) {
-			Log::warning("Cash::update - Aucune produit trouvé pour l'UID : {$uid}");
+			Log::warning("Cash::update - Aucune caisse trouvée pour l'UID : {$uid}");
 			return response()->json([
 				'status' => false,
 				'message' => "Caisse non trouvé.",
 			]);
 		}
 		$set = [
-			'seuil' => $request->seuil,
-			'libelle' => $request->libelle,
-			'prix_achat' => $request->prix_achat,
-			'prix_vente' => $request->prix_vente,
-			'description' => $request->description,
+			'date_at' => $request->date_at,
+			'cash_in' => $request->cash_in,
+			'cash_out' => $request->cash_out,
 		];
-		$photo = '';
-		if ($request->file('photo') != '') {
-			// Validator
-			$validator = Validator::make($request->all(), [
-				'photo' => 'required|file|mimes:png,jpg,jpeg,svg,webp|max:2048',
-			], [
-				'photo.file' => "La photo doit être un fichier.",
-				'photo.mimes' => "La photo doit être un fichier de type : png, jpg, jpeg, svg ou webp.",
-				'photo.max' => "La photo ne doit pas être supérieur à 2Mo.",
-			]);
-			// Error field
-			if ($validator->fails()) {
-				Log::warning("Cash::store - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
-				return response()->json([
-					'status' => false,
-					'message' => $validator->errors()->first(),
-				]);
-			}
-			$set['photo'] = $photo = $request->file('photo')->store('cashs', 'public');
-		}
-		DB::beginTransaction(); // Démarrer une transaction
+		DB::beginTransaction();
 		try {
-			// Mettre à jour le produit
+			// Mettre à jour la caisse
 			$query->update($set);
-			DB::commit(); // Valider la transaction
+			DB::commit();
+			// Enregistrer les produits des categories
+			if ($request->has('kt_docs_repeater_basic') && is_array($request->kt_docs_repeater_basic)) {
+				// Supprimer les anciennes permissions
+				Transaction::where('cash_id', $query->id)->delete();
+				foreach ($request->kt_docs_repeater_basic as $data) :
+					// Enregistrer le produit
+					Transaction::firstOrCreate([
+						'cash_id' => $query->id,
+						'price' => $data['price'],
+						'quantity' => $data['quantity'],
+						'product_id' => $data['product_id'],
+						'category_id' => $data['category_id'],
+					]);
+				endforeach;
+			}
+			$date = date('d-m-Y', strtotime($request->date_at));
 			Myhelper::logs(
 				Session::get('username'),
 				Session::get('profil'),
-				"Caisse: {$request->libelle}",
+				"Caisse: {$date}",
 				'Modifier',
 				Session::get('avatar')
 			);
 			return response()->json([
 				'status' => true,
-				'message' => "Caisse modifié avec succès.",
+				'message' => "Caisse modifiée avec succès.",
 			]);
 		} catch (\Exception $e) {
 			DB::rollBack(); // Annuler la transaction en cas d'erreur

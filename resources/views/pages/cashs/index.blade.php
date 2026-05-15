@@ -21,40 +21,32 @@
         <tbody>
           @php
             $i = 1;
-            $href_edit = $class_status = $class_delete = '';
-            $color_edit = $color_status = $color_delete = 'text-muted';
-            if (in_array(4, $actionIds)) {
-              $class_status = "status";
-              $color_status = 'text-info';
-            }
-            if (in_array(5, $actionIds)) {
-              $class_delete = "status";
-              $color_delete = 'text-danger';
-            }
+            $href_edit = $class_delete = '';
+            $color_edit = $color_delete = 'text-muted';
             foreach ($query as $data) :
-            if (in_array(3, $actionIds)) {
+            if (($data->status == 0) && (in_array(3, $actionIds))) {
               $href_edit = "/cashs/{$data->uid}/edit";
               $color_edit = 'text-warning';
+            }
+            if (($data->status == 0) && (in_array(4, $actionIds))) {
+              $class_delete = "status";
+              $color_delete = 'text-danger';
             }
             switch ($data->status) {
               case 1 :
                 $status = 'Transmis';
-                $action = 'Valider/Rejeter';
                 $badge = 'badge-light-warning';
                 break;
               case 2 :
                 $status = 'Validé';
-                $action = 'Imprimer';
                 $badge = 'badge-light-success';
                 break;
               case 3 :
                 $status = 'Rejeté';
-                $action = 'Dupliquer';
                 $badge = 'badge-light-danger';
                 break;
               default :
                 $status = 'Brouillon';
-                $action = 'Transmettre';
                 $badge = 'badge-light-primary';
             }
             $balance = $data->cash_in - $data->cash_out;
@@ -75,12 +67,6 @@
               </a>
               <a href="{{ $href_edit }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier la caisse" class="btn btn-icon btn-bg-light btn-sm me-1">
                 <i class="ki-duotone ki-pencil {{ $color_edit }} fs-2">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
-              </a>
-              <a href="#" data-url="/cashs/status/{{ $data->uid }}" data-type="PATCH" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $action }} la caisse" class="btn btn-icon btn-bg-light btn-sm me-1 {{ $class_status }}">
-                <i class="ki-duotone ki-filter {{ $color_status }} fs-2">
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>

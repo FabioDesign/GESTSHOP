@@ -6,7 +6,7 @@ use Session;
 use Myhelper;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\{Auth, Log};
-use App\Models\{Profile, Product, User};
+use App\Models\{Cash, Product, Profile, User};
 
 class StatusController extends Controller
 {
@@ -16,19 +16,23 @@ class StatusController extends Controller
             return 'x';
         }
         try {
-            // 🔁 Mapping dynamique
+            // Mapping dynamique
             $models = [
+                'cashs' => [
+                    'model' => Cash::class,
+                    'label' => 'Caisse'
+                ],
                 'category' => [
                     'model' => Product::class,
                     'label' => 'Categorie'
                 ],
-                'profiles' => [
-                    'model' => Profile::class,
-                    'label' => 'Profil'
-                ],
                 'product' => [
                     'model' => Product::class,
                     'label' => 'Produit'
+                ],
+                'profiles' => [
+                    'model' => Profile::class,
+                    'label' => 'Profil'
                 ],
                 'users' => [
                     'model' => User::class,
@@ -62,11 +66,46 @@ class StatusController extends Controller
                 ]);
             }
             // Changement de statut
-            $newStatus = $item->status == 1 ? 0 : 1;
-            $action = $newStatus == 1 ? 'Activé' : 'Désactivé';
-            $item->update([
-                'status' => $newStatus,
-            ]);
+            if ($type === 'cashs') {
+                switch ($item->status) {
+                    case 0 :
+                        $actionIds = Myhelper::actions(Auth::user()->profile_id, 2);
+                        if (in_array(6, $actionIds)) {
+                            $action = 'Transmise';
+                            $set = [
+                                'status' => 1,
+                                'transmitted_at' => now(),
+                                'transmitted_by' => Auth::user()->id,
+                            ];
+                        } else {
+                            $action = 'Validée';
+                            $set = [
+                                'status' => 2,
+                                'validated_at' => now(),
+                                'validated_by' => Auth::user()->id,
+                            ];
+                        }
+                        break;
+                    case 1 :
+                        $action = 'Validée';
+                        $set = [
+                            'status' => 2,
+                            'validated_at' => now(),
+                            'validated_by' => Auth::user()->id,
+                        ];
+                        break;
+                    default :
+                        $newStatus = 0;
+                        $action = 'Désactivé';
+                }
+            } else {
+                $newStatus = $item->status == 1 ? 0 : 1;
+                $action = $newStatus == 1 ? 'Activé' : 'Désactivé';
+                $set = [
+                    'status' => $newStatus,
+                ];
+            }
+            $item->update($set);
             $libelle = $item->libelle ?? ($item->lastname . ' ' . $item->firstname);
             // Log
             Myhelper::logs(
