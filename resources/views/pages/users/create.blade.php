@@ -28,7 +28,7 @@
             <div class="row mb-5">
                 <div class="col-md-4 col-12">
                     <label class="fw-bolder text-dark fs-5">Numéro de téléphone : <span class="text-danger">*</span></label>
-                    <input type="text" name="number" class="form-control requiredField number" onKeyUp="verif_int(this)">
+                    <input type="text" name="number" class="form-control requiredField number" placeholder="Saisir numéro de téléphone" onKeyUp="verif_int(this)">
                 </div>
                 <div class="col-md-4 col-12">
                     <label class="fw-bolder text-dark fs-5">Email : <span class="text-danger">*</span></label>

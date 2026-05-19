@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('cash_in', 10, 0);
             $table->decimal('cash_out', 10, 0);
             $table->date('date_at')->unique();
+            $table->text('motif')->nullable();
             $table->tinyInteger('status')->default('0');
             $table->timestamps();
             $table->softDeletes();

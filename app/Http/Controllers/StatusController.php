@@ -67,6 +67,7 @@ class StatusController extends Controller
             }
             // Changement de statut
             if ($type === 'cashs') {
+                $libelle = date('d-m-Y', strtotime($item->date_at));
                 switch ($item->status) {
                     case 0 :
                         $actionIds = Myhelper::actions(Auth::user()->profile_id, 2);
@@ -104,15 +105,15 @@ class StatusController extends Controller
                 $set = [
                     'status' => $newStatus,
                 ];
+                $libelle = $item->libelle ?? ($item->lastname . ' ' . $item->firstname);
             }
             $item->update($set);
-            $libelle = $item->libelle ?? ($item->lastname . ' ' . $item->firstname);
             // Log
             Myhelper::logs(
                 Session::get('username'),
                 Session::get('profil'),
-                "{$label}: {$libelle} $action",
-				'Modifier',
+                "{$label}: {$libelle}",
+				$action,
                 Session::get('avatar')
             );
 			return response()->json([

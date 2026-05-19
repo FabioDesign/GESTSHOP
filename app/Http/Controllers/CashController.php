@@ -7,7 +7,7 @@ use Myhelper;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Models\{Cash, Category, Product, Transaction};
+use App\Models\{Category, Cash, Product, Transaction};
 use Illuminate\Support\Facades\{Auth, DB, Log, Validator};
 
 class CashController extends Controller
@@ -54,11 +54,11 @@ class CashController extends Controller
 		}
 		//Modal
 		$actionIds = Myhelper::actions(Auth::user()->profile_id, 2);
-		$valid = (($query->status == 0) && (in_array(6, $actionIds))) ? '<a href="#" data-url="/cashs/status/' . $uid . '" data-type="PATCH" data-bs-toggle="tooltip" data-bs-placement="top" title="Transmettre la caisse" class="btn btn-sm fw-bold btn-primary status">Transmettre</a>':'';
+		$valid = (($query->status == 0) && (in_array(6, $actionIds))) ? '<a href="#" data-url="/cashs/status/' . $uid . '" data-type="PATCH" data-bs-toggle="tooltip" data-bs-placement="top" title="Transmettre la caisse" class="btn btn-sm fw-bold btn-success status">Transmettre</a>':'';
 		if (!$valid) $valid = (($query->status <= 1) && (in_array(7, $actionIds))) ? '<a href="#" data-url="/cashs/status/' . $uid . '" data-type="PATCH" data-bs-toggle="tooltip" data-bs-placement="top" title="Valider la caisse" class="btn btn-sm fw-bold btn-success status">Valider</a>':'';
-		$delete = (($query->status <= 1) && (in_array(8, $actionIds))) ? '<a href="#" data-url="/cashs/status/' . $uid . '" data-type="PATCH" class="btn btn-sm fw-bold btn-danger btn-rjt">Rejeter</a>':'';
+		$delete = (($query->status <= 1) && (in_array(8, $actionIds))) ? '<a href="#" class="btn btn-sm fw-bold btn-danger btn-rjt">Rejeter</a>':'';
 		// Modal
-		$addmodal = '<a href="/cashs" class="btn btn-sm fw-bold btn-danger">Retour</a>' . $valid . $delete;
+		$addmodal = '<a href="/cashs" class="btn btn-sm fw-bold btn-primary">Retour</a>' . $valid . $delete;
 		$transactions = Transaction::where('cash_id', $query->id)->get();
 		return view('pages.cashs.show', compact('title', 'currentMenu', 'addmodal', 'query', 'transactions'));
 	}
@@ -330,6 +330,72 @@ class CashController extends Controller
 			return response()->json([
 				'status' => false,
 				'message' => "Erreur lors de la suppression.",
+			]);
+		}
+	}
+	// Mettre à jour une caisse
+	public function reject(Request $request)
+	{
+        if (!Auth::check()) {
+            return 'x';
+        }
+		// Validator
+		$validator = Validator::make($request->all(), [
+			'uid' => 'required|uuid|exists:cashes,uid',
+			'motif' => 'required|string|min:10',
+		], [
+			'uid.required' => "L'identifiant est obligatoire.",
+			'uid.uuid' => "L'identifiant doit être un UUID valide.",
+			'uid.exists' => "La caisse spécifiée n'existe pas.",
+			'motif.required' => "Le motif est obligatoire.",
+			'motif.min' => "Le motif doit contenir au moins 10 caractères.",
+		]);
+		// Error field
+		if ($validator->fails()) {
+			Log::warning("Cash::reject - Validator : {$validator->errors()->first()} - " . json_encode($request->all()));
+			return response()->json([
+				'status' => false,
+				'message' => $validator->errors()->first(),
+			]);
+		}
+		// Vérifier si la caisse existe
+		$query = Cash::where('uid', $request->uid)->first();
+		if (!$query) {
+			Log::warning("Cash::reject - Aucune caisse trouvée pour l'UID : {$request->uid}");
+			return response()->json([
+				'status' => false,
+				'message' => "Caisse non trouvé.",
+			]);
+		}
+		$set = [
+			'status' => 3,
+			'rejeted_at' => now(),
+			'motif' => $request->motif,
+			'rejeted_by' => Auth::user()->id,
+		];
+		DB::beginTransaction();
+		try {
+			// Mettre à jour la caisse
+			$query->update($set);
+			DB::commit();
+			$date = date('d-m-Y', strtotime($query->date_at));
+			Myhelper::logs(
+				Session::get('username'),
+				Session::get('profil'),
+				"Caisse: {$date}",
+				'Rejeté',
+				Session::get('avatar')
+			);
+			return response()->json([
+				'status' => true,
+				'message' => "Caisse rejetée avec succès.",
+			]);
+		} catch (\Exception $e) {
+			DB::rollBack(); // Annuler la transaction en cas d'erreur
+			Log::warning("Cash::reject - Erreur : {$e->getMessage()} " . json_encode($request->all()));
+			return response()->json([
+				'status' => false,
+				'message' => "Erreur lors du rejet.",
 			]);
 		}
 	}

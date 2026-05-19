@@ -175,7 +175,7 @@ $(document).on('click', '.status', function(e) {
             window.location.href = '/';
             return;
           }
-          if (response.status == 1) {
+          if (response.status == true) {
             Swal.fire({
               title: "Félicitation !",
               text: response.message,

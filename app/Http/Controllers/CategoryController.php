@@ -291,6 +291,7 @@ class CategoryController extends Controller
 				$query->where('category_id', $id);
 			else
 				$query->where('category_id', 0);
+			if ($id == 2) $query->where('stock', '>', 0);
 			$product = $query->orderBy('libelle')->get();
 			return response()->json([
 				'status' => true,

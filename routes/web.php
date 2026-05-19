@@ -50,8 +50,13 @@ Route::middleware(['auth'])->group(function () {
     'profiles' => ProfileController::class,
     'users' => UserController::class,
   ]);
-  // Route pour Tableau de bord
-  Route::get('/dashboard', [DashboardController::class, 'index']);
+  // Routes pour Tableau de bord
+  Route::controller(DashboardController::class)->group(function () {
+    Route::get('/dashboard', 'index');
+    Route::post('/dashboard', 'statistics');
+  });
+  // Route pour Caisse
+  Route::post('/reject', [CashController::class, 'reject']);
   // Routes pour les produits
   Route::controller(ProductController::class)->group(function () {
     Route::get('/gestStock', 'gestStock');
